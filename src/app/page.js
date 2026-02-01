@@ -76,14 +76,8 @@ export default function Home() {
 
           <div className="grid md:grid-cols-3 gap-8">
             {/* Feature 1 */}
-            <div
-              className="group relative bg-linear-to-br from-emerald-500/10 to-emerald-600/5 backdrop-blur-sm border border-emerald-500/20 
-            p-8 rounded-3xl transition-all duration-500 hover:scale-105 hover:border-emerald-400/40 hover:shadow-[0_0_50px_rgba(16,185,129,0.3)]"
-            >
-              <div
-                className="absolute -top-6 -right-5 w-20 h-20 bg-linear-to-br from-emerald-400 to-emerald-600 rounded-3xl flex items-center 
-              justify-center shadow-2xl shadow-emerald-500/50 group-hover:rotate-12 transition-transform duration-500"
-              >
+            <div className="group relative bg-linear-to-br from-emerald-500/10 to-emerald-600/5 backdrop-blur-sm border border-emerald-500/20 p-8 rounded-3xl transition-all duration-500 hover:scale-105 hover:border-emerald-400/40 hover:shadow-[0_0_50px_rgba(16,185,129,0.3)]">
+              <div className="absolute -top-6 -right-5 w-20 h-20 bg-linear-to-br from-emerald-400 to-emerald-600 rounded-3xl flex items-centerjustify-center shadow-2xl shadow-emerald-500/50 group-hover:rotate-12 transition-transform duration-500">
                 <ShieldCheck size={48} color="white" strokeWidth={2.5} />
               </div>
 
@@ -104,14 +98,8 @@ export default function Home() {
             </div>
 
             {/* Feature 2 */}
-            <div
-              className="group relative bg-linear-to-br from-rose-500/10 to-rose-600/5 backdrop-blur-sm border border-rose-500/20 p-8 
-            rounded-3xl transition-all duration-500 hover:scale-105 hover:border-rose-400/40 hover:shadow-[0_0_50px_rgba(244,63,94,0.3)]"
-            >
-              <div
-                className="absolute -top-6 -right-5 w-20 h-20 bg-linear-to-br from-rose-400 to-rose-600 rounded-3xl flex items-center 
-              justify-center shadow-2xl shadow-rose-500/50 group-hover:rotate-12 transition-transform duration-500"
-              >
+            <div className="group relative bg-linear-to-br from-rose-500/10 to-rose-600/5 backdrop-blur-sm border border-rose-500/20 p-8 rounded-3xl transition-all duration-500 hover:scale-105 hover:border-rose-400/40 hover:shadow-[0_0_50px_rgba(244,63,94,0.3)]">
+              <div className="absolute -top-6 -right-5 w-20 h-20 bg-linear-to-br from-rose-400 to-rose-600 rounded-3xl flex items-center justify-center shadow-2xl shadow-rose-500/50 group-hover:rotate-12 transition-transform duration-500">
                 <AlertTriangle size={48} color="white" strokeWidth={2.5} />
               </div>
 
@@ -131,14 +119,8 @@ export default function Home() {
             </div>
 
             {/* Feature 3 */}
-            <div
-              className="group relative bg-linear-to-br from-sky-500/10 to-sky-600/5 backdrop-blur-sm border border-sky-500/20 p-8
-             rounded-3xl transition-all duration-500 hover:scale-105 hover:border-sky-400/40 hover:shadow-[0_0_50px_rgba(14,165,233,0.3)]"
-            >
-              <div
-                className="absolute -top-6 -right-5 w-20 h-20 bg-linear-to-br from-sky-400 to-sky-600 rounded-3xl flex items-center 
-              justify-center shadow-2xl shadow-sky-500/50 group-hover:rotate-12 transition-transform duration-500"
-              >
+            <div className="group relative bg-linear-to-br from-sky-500/10 to-sky-600/5 backdrop-blur-sm border border-sky-500/20 p-8 rounded-3xl transition-all duration-500 hover:scale-105 hover:border-sky-400/40 hover:shadow-[0_0_50px_rgba(14,165,233,0.3)]">
+              <div className="absolute -top-6 -right-5 w-20 h-20 bg-linear-to-br from-sky-400 to-sky-600 rounded-3xl flex items-center justify-center shadow-2xl shadow-sky-500/50 group-hover:rotate-12 transition-transform duration-500">
                 <Zap size={48} color="white" strokeWidth={2.5} />
               </div>
 
@@ -166,40 +148,22 @@ export default function Home() {
 
         <div className="relative max-w-7xl mx-auto">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-8 ">
-            <div
-              className="group text-center   p-8 bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl hover:bg-white/10 
-            transition-all duration-300 hover:scale-105"
-            >
-              <div
-                className="text-4xl md:text-6xl font-black bg-linear-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-transparent
-               mb-3 group-hover:scale-110 transition-transform"
-              >
+            <div className="group text-center   p-8 bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl hover:bg-white/1 transition-all duration-300 hover:scale-105">
+              <div className="text-4xl md:text-6xl font-black bg-linear-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-transparent mb-3 group-hover:scale-110 transition-transform">
                 4
               </div>
               <p className="text-gray-400 text-lg font-medium">شركات اتصال</p>
             </div>
 
-            <div
-              className="group text-center p-8 bg-white/5 place-content-center backdrop-blur-sm border border-white/10 rounded-2xl hover:bg-white/10
-             transition-all duration-300 hover:scale-105"
-            >
-              <div
-                className="text-3xl  md:text-6xl font-black bg-linear-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent
-               mb-3 group-hover:scale-110 transition-transform"
-              >
+            <div className="group text-center p-8 bg-white/5 place-content-center backdrop-blur-sm border border-white/10 rounded-2xl hover:bg-white/10 transition-all duration-300 hover:scale-105">
+              <div className="text-3xl  md:text-6xl font-black bg-linear-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent mb-3 group-hover:scale-110 transition-transform">
                 24/7
               </div>
               <p className="text-gray-400 text-lg font-medium">دعم فني</p>
             </div>
 
-            <div
-              className="group text-center p-8 place-content-center bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl
-             hover:bg-white/10 transition-all duration-300 hover:scale-105"
-            >
-              <div
-                className="text-3xl md:text-6xl font-black bg-linear-to-r from-rose-400 to-pink-400 bg-clip-text 
-              text-transparent mb-3 group-hover:scale-110 transition-transform"
-              >
+            <div className="group text-center p-8 place-content-center bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl hover:bg-white/10 transition-all duration-300 hover:scale-105">
+              <div className="text-3xl md:text-6xl font-black bg-linear-to-r from-rose-400 to-pink-400 bg-clip-text text-transparent mb-3 group-hover:scale-110 transition-transform">
                 99.9%
               </div>
               <p className="text-gray-400 text-lg font-medium">نسبة تشغيل</p>
