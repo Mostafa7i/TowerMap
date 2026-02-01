@@ -2,12 +2,13 @@
 import { AlertTriangle, ShieldCheck, Zap, ArrowLeft } from "lucide-react";
 import React from "react";
 import TextEffect from "./components/TextEffect";
+import { motion } from "framer-motion";
 
 export default function Home() {
   return (
     <div className="relative overflow-hidden bg-slate-950" dir="rtl">
       {/* Hero Section */}
-      <div className="relative min-h-screen flex flex-col items-center justify-center px-6 overflow-hidden">
+      <div className="relative min-h-dvh flex flex-col items-center justify-center px-6 overflow-hidden">
         {/* Animated Background */}
         <div className="absolute inset-0 bg-linear-to-br from-violet-950 via-slate-950 to-fuchsia-950">
           <div className="absolute inset-0 opacity-30">
@@ -18,7 +19,13 @@ export default function Home() {
         </div>
 
         {/* Hero Content */}
-        <div className="relative z-10 max-w-6xl mx-auto text-center">
+        <motion.div
+          whileTap={{ scale: 0.95 }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="relative z-10 max-w-6xl mx-auto text-center"
+        >
           <div>
             <div className="inline-block mb-6">
               <span className="bg-violet-500/20 border border-violet-500/30 text-violet-200 px-6 py-2 rounded-full text-sm font-medium backdrop-blur-sm">
@@ -33,51 +40,107 @@ export default function Home() {
               <TextEffect />
             </h1>
 
-            <p className="text-gray-300 text-lg md:text-2xl max-w-4xl mx-auto leading-relaxed mb-12 font-light">
+            <motion.p
+              whileTap={{ scale: 0.95 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.7 }}
+              className="text-gray-300 text-lg md:text-2xl max-w-4xl mx-auto leading-relaxed mb-12 font-light"
+            >
               راقب أداء الشبكة، اكتشف الأعطال قبل حدوثها، وتجنب انقطاع الخدمة
               باستخدام تقنية{" "}
               <bdi className="font-bold text-violet-400">SNMP</bdi> والذكاء
               الاصطناعي
-            </p>
+            </motion.p>
 
             <div className="flex flex-wrap justify-center gap-6">
-              <button className="group relative px-10 py-5 bg-linear-to-r from-violet-600 to-fuchsia-600 text-white rounded-2xl font-bold text-lg overflow-hidden transition-all duration-300 hover:shadow-[0_0_40px_rgba(139,92,246,0.6)] hover:scale-105">
+              <motion.button
+                whileHover={{
+                  scale: 1.05,
+                  boxShadow: "0 0 20px rgba(255,255,255,0.5)",
+                }}
+                whileTap={{ scale: 0.95 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.9, delay: 0.9 }}
+                className="group relative px-10 py-5 bg-linear-to-r from-violet-600 to-fuchsia-600 text-white rounded-2xl font-bold text-lg overflow-hidden transition-all duration-300 hover:shadow-[0_0_40px_rgba(139,92,246,0.6)] hover:scale-105"
+              >
                 <span className="relative z-10 flex items-center gap-3">
                   تجربة مجانية
                   <ArrowLeft className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </span>
                 <div className="absolute inset-0 bg-linear-to-r from-fuchsia-600 to-violet-600 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-              </button>
+              </motion.button>
 
-              <button className="px-10 py-5 bg-white/10 backdrop-blur-md border-2 border-white/20 text-white rounded-2xl font-bold text-lg transition-all duration-300 hover:bg-white/20 hover:border-white/40 hover:scale-105">
+              <motion.button
+                whileHover={{
+                  scale: 1.05,
+                  boxShadow: "0 0 20px rgba(255,255,255,0.5)",
+                }}
+                whileTap={{ scale: 0.95 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.9, delay: 0.9 }}
+                className="px-10 py-5 bg-white/10 backdrop-blur-md border-2 border-white/20 text-white rounded-2xl font-bold text-lg transition-all duration-300 hover:bg-white/20 hover:border-white/40 hover:scale-105"
+              >
                 عرض توضيحي
-              </button>
+              </motion.button>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Scroll Indicator */}
-        <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce">
+        <motion.div
+          whileTap={{ scale: 0.95 }}
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.5 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce"
+        >
           <div className="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center">
             <div className="w-1.5 h-3 bg-white/50 rounded-full mt-2 animate-pulse"></div>
           </div>
-        </div>
+        </motion.div>
       </div>
 
       {/* Features Section */}
-      <div className="relative bg-linear-to-b from-slate-950 to-slate-900 py-24 px-6">
+      <div className="relative bg-linear-to-b from-slate-950 to-slate-900 py-15 px-6">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-20">
+          <motion.div
+            whileTap={{ scale: 0.95 }}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.5 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="text-center mb-20"
+          >
             <h2 className="text-3xl sm:text-6xl font-black text-white mb-4">
               لماذا تختار نظامنا؟
             </h2>
-            <p className="text-gray-400 text-lg">مزايا لا مثيل لها في السوق</p>
-          </div>
+            <motion.p
+              whileTap={{ scale: 0.95 }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.5 }}
+              transition={{ duration: 0.9, delay: 0.5 }}
+              className="text-gray-400 text-lg"
+            >
+              مزايا لا مثيل لها في السوق
+            </motion.p>
+          </motion.div>
 
           <div className="grid md:grid-cols-3 gap-8">
             {/* Feature 1 */}
-            <div className="group relative bg-linear-to-br from-emerald-500/10 to-emerald-600/5 backdrop-blur-sm border border-emerald-500/20 p-8 rounded-3xl transition-all duration-500 hover:scale-105 hover:border-emerald-400/40 hover:shadow-[0_0_50px_rgba(16,185,129,0.3)]">
-              <div className="absolute -top-6 -right-5 w-20 h-20 bg-linear-to-br from-emerald-400 to-emerald-600 rounded-3xl flex items-centerjustify-center shadow-2xl shadow-emerald-500/50 group-hover:rotate-12 transition-transform duration-500">
+            <motion.div
+              whileTap={{ scale: 0.95 }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.5 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="group relative bg-linear-to-br from-emerald-500/10 to-emerald-600/5 backdrop-blur-sm border border-emerald-500/20 p-8 rounded-3xl transition-all duration-500 hover:scale-105 hover:border-emerald-400/40 hover:shadow-[0_0_50px_rgba(16,185,129,0.3)]"
+            >
+              <div className="absolute -top-6 -right-5 w-20 h-20 bg-linear-to-br from-emerald-400 to-emerald-600 rounded-3xl flex items-center justify-center shadow-2xl shadow-emerald-500/50 group-hover:rotate-12 transition-transform duration-500">
                 <ShieldCheck size={48} color="white" strokeWidth={2.5} />
               </div>
 
@@ -95,10 +158,17 @@ export default function Home() {
               <div className="absolute bottom-4 left-4 opacity-10 group-hover:opacity-20 transition-opacity">
                 <ShieldCheck size={120} strokeWidth={1} />
               </div>
-            </div>
+            </motion.div>
 
             {/* Feature 2 */}
-            <div className="group relative bg-linear-to-br from-rose-500/10 to-rose-600/5 backdrop-blur-sm border border-rose-500/20 p-8 rounded-3xl transition-all duration-500 hover:scale-105 hover:border-rose-400/40 hover:shadow-[0_0_50px_rgba(244,63,94,0.3)]">
+            <motion.div
+              whileTap={{ scale: 0.95 }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.5 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="group relative bg-linear-to-br from-rose-500/10 to-rose-600/5 backdrop-blur-sm border border-rose-500/20 p-8 rounded-3xl transition-all duration-500 hover:scale-105 hover:border-rose-400/40 hover:shadow-[0_0_50px_rgba(244,63,94,0.3)]"
+            >
               <div className="absolute -top-6 -right-5 w-20 h-20 bg-linear-to-br from-rose-400 to-rose-600 rounded-3xl flex items-center justify-center shadow-2xl shadow-rose-500/50 group-hover:rotate-12 transition-transform duration-500">
                 <AlertTriangle size={48} color="white" strokeWidth={2.5} />
               </div>
@@ -116,10 +186,17 @@ export default function Home() {
               <div className="absolute bottom-4 left-4 opacity-10 group-hover:opacity-20 transition-opacity">
                 <AlertTriangle size={120} strokeWidth={1} />
               </div>
-            </div>
+            </motion.div>
 
             {/* Feature 3 */}
-            <div className="group relative bg-linear-to-br from-sky-500/10 to-sky-600/5 backdrop-blur-sm border border-sky-500/20 p-8 rounded-3xl transition-all duration-500 hover:scale-105 hover:border-sky-400/40 hover:shadow-[0_0_50px_rgba(14,165,233,0.3)]">
+            <motion.div
+              whileTap={{ scale: 0.95 }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.5 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="group relative bg-linear-to-br from-sky-500/10 to-sky-600/5 backdrop-blur-sm border border-sky-500/20 p-8 rounded-3xl transition-all duration-500 hover:scale-105 hover:border-sky-400/40 hover:shadow-[0_0_50px_rgba(14,165,233,0.3)]"
+            >
               <div className="absolute -top-6 -right-5 w-20 h-20 bg-linear-to-br from-sky-400 to-sky-600 rounded-3xl flex items-center justify-center shadow-2xl shadow-sky-500/50 group-hover:rotate-12 transition-transform duration-500">
                 <Zap size={48} color="white" strokeWidth={2.5} />
               </div>
@@ -137,7 +214,7 @@ export default function Home() {
               <div className="absolute bottom-4 left-4 opacity-10 group-hover:opacity-20 transition-opacity">
                 <Zap size={120} strokeWidth={1} />
               </div>
-            </div>
+            </motion.div>
           </div>
         </div>
       </div>
@@ -147,36 +224,64 @@ export default function Home() {
         <div className="absolute inset-0 bg-[radial-linear(circle_at_50%_50%,rgba(139,92,246,0.1),transparent_50%)]"></div>
 
         <div className="relative max-w-7xl mx-auto">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-8 ">
-            <div className="group text-center   p-8 bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl hover:bg-white/1 transition-all duration-300 hover:scale-105">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 ">
+            <motion.div
+              whileTap={{ scale: 0.95 }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.5 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="group text-center   p-8 bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl hover:bg-white/1 transition-all duration-300 hover:scale-105"
+            >
               <div className="text-4xl md:text-6xl font-black bg-linear-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-transparent mb-3 group-hover:scale-110 transition-transform">
                 4
               </div>
               <p className="text-gray-400 text-lg font-medium">شركات اتصال</p>
-            </div>
+            </motion.div>
 
-            <div className="group text-center p-8 bg-white/5 place-content-center backdrop-blur-sm border border-white/10 rounded-2xl hover:bg-white/10 transition-all duration-300 hover:scale-105">
+            <motion.div
+              whileTap={{ scale: 0.95 }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.5 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="group text-center p-8 bg-white/5 place-content-center backdrop-blur-sm border border-white/10 rounded-2xl hover:bg-white/10 transition-all duration-300 hover:scale-105"
+            >
               <div className="text-3xl  md:text-6xl font-black bg-linear-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent mb-3 group-hover:scale-110 transition-transform">
                 24/7
               </div>
               <p className="text-gray-400 text-lg font-medium">دعم فني</p>
-            </div>
+            </motion.div>
 
-            <div className="group text-center p-8 place-content-center bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl hover:bg-white/10 transition-all duration-300 hover:scale-105">
+            <motion.div
+              whileTap={{ scale: 0.95 }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.5 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="group text-center p-8 place-content-center bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl hover:bg-white/10 transition-all duration-300 hover:scale-105"
+            >
               <div className="text-3xl md:text-6xl font-black bg-linear-to-r from-rose-400 to-pink-400 bg-clip-text text-transparent mb-3 group-hover:scale-110 transition-transform">
                 99.9%
               </div>
               <p className="text-gray-400 text-lg font-medium">نسبة تشغيل</p>
-            </div>
+            </motion.div>
 
-            <div className="group text-center p-8 place-content-center bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl hover:bg-white/10 transition-all duration-300 hover:scale-105">
+            <motion.div
+              whileTap={{ scale: 0.95 }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.5 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="group text-center p-8 place-content-center bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl hover:bg-white/10 transition-all duration-300 hover:scale-105"
+            >
               <div className="text-3xl md:text-6xl font-black bg-linear-to-r from-sky-400 to-blue-400 bg-clip-text text-transparent mb-3 group-hover:scale-110 transition-transform">
                 500+
               </div>
               <p className="text-gray-400 text-lg font-medium">
                 برج تحت المراقبة
               </p>
-            </div>
+            </motion.div>
           </div>
         </div>
       </div>

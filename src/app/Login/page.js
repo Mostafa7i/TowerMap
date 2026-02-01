@@ -3,6 +3,7 @@ import { Key, Mail } from "lucide-react";
 import Link from "next/link";
 import React, { useState } from "react";
 import { NotifiyInfo } from "../components/Notify"; // تأكد إن الاسم صحيح (NotifyInfo غالباً)
+import { motion } from "framer-motion";
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({
@@ -68,7 +69,12 @@ export default function LoginPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12">
-      <div className="w-full max-w-md overflow-hidden rounded-3xl shadow-2xl">
+      <motion.div 
+           whileTap={{ scale: 0.95 }}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, delay: 0.2 }}
+      className="w-full max-w-md overflow-hidden rounded-3xl shadow-2xl">
         {/* الهيدر */}
         <div className="bg-linear-to-r from-green-600 to-indigo-600 p-8 text-center">
           <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-linear-to-br from-lime-500 to-indigo-500 text-2xl font-bold text-white animate-pulse">
@@ -155,7 +161,7 @@ export default function LoginPage() {
             </Link>
           </p>
         </form>
-      </div>
+      </motion.div>
     </div>
   );
 }

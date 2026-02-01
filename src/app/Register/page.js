@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { useState } from "react";
+import { motion } from "framer-motion";
 
 const registerSchema = Yup.object({
   fullName: Yup.string()
@@ -37,12 +38,13 @@ const registerSchema = Yup.object({
 export default function RegisterPage() {
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = async (values, { setSubmitting, resetForm, setFieldError }) => {
+  const handleSubmit = async (
+    values,
+    { setSubmitting, resetForm, setFieldError },
+  ) => {
     setIsLoading(true);
 
     try {
- 
-
       if (!res.ok) {
         // مثال: لو الإيميل موجود بالفعل
         if (data.error?.includes("email")) {
@@ -56,7 +58,6 @@ export default function RegisterPage() {
 
       resetForm();
       // router.push("/login");   ← لو عايز توجّهه لصفحة اللوجن
-
     } catch (err) {
       console.error("Register error:", err);
       // NotifiyInfo(err.message || "حدث خطأ أثناء التسجيل");
@@ -67,11 +68,15 @@ export default function RegisterPage() {
     }
   };
 
-  
-
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12">
-      <div className="w-full max-w-md overflow-hidden rounded-3xl shadow-2xl">
+      <motion.div
+        whileTap={{ scale: 0.95 }}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, delay: 0.2 }}
+        className="w-full max-w-md overflow-hidden rounded-3xl shadow-2xl"
+      >
         {/* Header */}
         <div className="bg-linear-to-r from-green-600 to-indigo-600 p-8 text-center">
           <div className="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-linear-to-br from-lime-500 to-indigo-500 md:text-2xl font-bold text-white animate-pulse shadow-lg">
@@ -97,7 +102,10 @@ export default function RegisterPage() {
             <Form className="bg-white px-8 pb-10 pt-6 space-y-5" dir="rtl">
               {/* الاسم الكامل */}
               <div className="relative">
-                <label htmlFor="fullName" className="block text-lg font-medium text-gray-700">
+                <label
+                  htmlFor="fullName"
+                  className="block text-lg font-medium text-gray-700"
+                >
                   الاسم الكامل
                 </label>
                 <div className="relative mt-1">
@@ -119,7 +127,10 @@ export default function RegisterPage() {
 
               {/* الإيميل */}
               <div className="relative">
-                <label htmlFor="email" className="block text-lg font-medium text-gray-700">
+                <label
+                  htmlFor="email"
+                  className="block text-lg font-medium text-gray-700"
+                >
                   البريد الإلكتروني
                 </label>
                 <div className="relative mt-1">
@@ -141,7 +152,10 @@ export default function RegisterPage() {
 
               {/* رقم الهاتف */}
               <div className="relative">
-                <label htmlFor="phone" className="block text-lg font-medium text-gray-700">
+                <label
+                  htmlFor="phone"
+                  className="block text-lg font-medium text-gray-700"
+                >
                   رقم الهاتف
                 </label>
                 <div className="relative mt-1">
@@ -165,7 +179,10 @@ export default function RegisterPage() {
 
               {/* التخصص */}
               <div className="relative">
-                <label htmlFor="section" className="block text-lg font-medium text-gray-700">
+                <label
+                  htmlFor="section"
+                  className="block text-lg font-medium text-gray-700"
+                >
                   التخصص / النوع
                 </label>
                 <div className="relative mt-1">
@@ -193,7 +210,10 @@ export default function RegisterPage() {
 
               {/* كلمة المرور */}
               <div className="relative">
-                <label htmlFor="password" className="block text-lg font-medium text-gray-700">
+                <label
+                  htmlFor="password"
+                  className="block text-lg font-medium text-gray-700"
+                >
                   كلمة المرور
                 </label>
                 <div className="relative mt-1">
@@ -215,7 +235,10 @@ export default function RegisterPage() {
 
               {/* تأكيد كلمة المرور */}
               <div className="relative">
-                <label htmlFor="confirmPassword" className="block text-lg font-medium text-gray-700">
+                <label
+                  htmlFor="confirmPassword"
+                  className="block text-lg font-medium text-gray-700"
+                >
                   تأكيد كلمة المرور
                 </label>
                 <div className="relative mt-1">
@@ -247,7 +270,9 @@ export default function RegisterPage() {
                   disabled:opacity-60 disabled:cursor-not-allowed
                 `}
               >
-                {isSubmitting || isLoading ? "جاري إنشاء الحساب..." : "إنشاء الحساب"}
+                {isSubmitting || isLoading
+                  ? "جاري إنشاء الحساب..."
+                  : "إنشاء الحساب"}
               </button>
 
               <p className="text-center text-gray-600">
@@ -262,7 +287,7 @@ export default function RegisterPage() {
             </Form>
           )}
         </Formik>
-      </div>
+      </motion.div>
     </div>
   );
 }
