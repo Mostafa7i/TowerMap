@@ -345,7 +345,7 @@ export default function Home() {
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.5 }}
-        transition={{ duration: 0.5, delay: 1.5 }}
+        transition={{ duration: 1, delay: 0.5 }}
         className="py-10"
       >
         <h2 className="text-white text-center mb-5 text-3xl font-bold">
