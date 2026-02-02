@@ -1,10 +1,64 @@
 "use client";
 import { AlertTriangle, ShieldCheck, Zap, ArrowLeft } from "lucide-react";
-import React from "react";
 import TextEffect from "./components/TextEffect";
 import { motion } from "framer-motion";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/autoplay";
+import TeamCard from "./components/TeamCard";
 
 export default function Home() {
+  const teamMembers = [
+    {
+      name: "أحمد",
+      role: "Front-End & Leader",
+      image:
+        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=faces",
+    },
+    {
+      name: "يمني",
+      role: "مصممة UI/UX",
+      image:
+        "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop&crop=faces",
+    },
+    {
+      name: "محمد",
+      role: "Backend & DevOps",
+      image:
+        "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop&crop=faces",
+    },
+    {
+      name: "ايمان",
+      role: "Data Scientist & AI",
+      image:
+        "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop&crop=faces",
+    },
+    {
+      name: "مايسه",
+      role: "Data Scientist & AI",
+      image:
+        "https://images.unsplash.com/photo-1499952127939-9bbf5af6c51c?q=80&w=1176&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    },
+    {
+      name: "زينب",
+      role: "Data Scientist & AI",
+      image:
+        "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=688&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    },
+    {
+      name: "نجوي",
+      role: "Data Scientist & AI",
+      image:
+        "https://plus.unsplash.com/premium_photo-1690407617686-d449aa2aad3c?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    },
+    {
+      name: "ريم علي",
+      role: "Data Scientist & AI",
+      image:
+        "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop&crop=faces",
+    },
+  ];
   return (
     <div className="relative overflow-hidden bg-slate-950" dir="rtl">
       {/* Hero Section */}
@@ -286,6 +340,45 @@ export default function Home() {
         </div>
       </div>
 
+      <motion.div
+        whileTap={{ scale: 0.95 }}
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.5 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+        className="py-10"
+      >
+        <h2 className="text-white text-center mb-5 text-3xl font-bold">
+          فريق العمل
+        </h2>
+        <div className="h-1 w-32 rounded-full mx-auto bg-indigo-400 -mt-1 mb-5"></div>
+        <Swiper
+          modules={[Autoplay]}
+          // spaceBetween={10}
+          slidesPerView={1.5} // جزء من الكارت الجاي يبان
+          centeredSlides={true}
+          loop={true} // ← ده اللي بيخلّيها مستمرة بدون توقف
+          autoplay={{
+            delay: 0, // بدون توقف بين الكروت
+            disableOnInteraction: false,
+          }}
+          speed={6000} // سرعة الحركة (أبطأ = أكثر استمرارية)
+          breakpoints={{
+            640: { slidesPerView: 2.5 },
+            1024: { slidesPerView: 3.5 },
+            1280: { slidesPerView: 4.5 },
+          }}
+          className="py-10"
+        >
+          {teamMembers.map((member, idx) => (
+            <SwiperSlide key={idx}>
+              <div className="px-4">
+                <TeamCard member={member} />
+              </div>
+            </SwiperSlide>
+          ))}
+        </Swiper>
+      </motion.div>
       {/* Footer */}
       <footer className="relative bg-slate-950 border-t border-white/10 py-16 px-6">
         <div className="max-w-7xl mx-auto text-center">
