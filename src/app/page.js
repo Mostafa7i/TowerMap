@@ -98,7 +98,7 @@ export default function Home() {
               whileTap={{ scale: 0.95 }}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.7 }}
+              transition={{ duration: 0.9, delay: 0.7 }}
               className="text-gray-300 text-lg md:text-2xl max-w-4xl mx-auto leading-relaxed mb-12 font-light"
             >
               راقب أداء الشبكة، اكتشف الأعطال قبل حدوثها، وتجنب انقطاع الخدمة
@@ -114,8 +114,8 @@ export default function Home() {
                   boxShadow: "0 0 20px rgba(255,255,255,0.5)",
                 }}
                 whileTap={{ scale: 0.95 }}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, x: 40 }}
+                animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.9, delay: 0.9 }}
                 className="group relative px-10 py-5 bg-linear-to-r from-violet-600 to-fuchsia-600 text-white rounded-2xl font-bold text-lg overflow-hidden transition-all duration-300 hover:shadow-[0_0_40px_rgba(139,92,246,0.6)] hover:scale-105"
               >
@@ -132,8 +132,8 @@ export default function Home() {
                   boxShadow: "0 0 20px rgba(255,255,255,0.5)",
                 }}
                 whileTap={{ scale: 0.95 }}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, x: -40 }}
+                animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.9, delay: 0.9 }}
                 className="px-10 py-5 bg-white/10 backdrop-blur-md border-2 border-white/20 text-white rounded-2xl font-bold text-lg transition-all duration-300 hover:bg-white/20 hover:border-white/40 hover:scale-105"
               >
@@ -177,7 +177,7 @@ export default function Home() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.5 }}
-              transition={{ duration: 0.9, delay: 0.5 }}
+              transition={{ duration: 0.9, delay: 0.8 }}
               className="text-gray-400 text-lg"
             >
               مزايا لا مثيل لها في السوق
@@ -220,7 +220,7 @@ export default function Home() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.5 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
               className="group relative bg-linear-to-br from-rose-500/10 to-rose-600/5 backdrop-blur-sm border border-rose-500/20 p-8 rounded-3xl transition-all duration-500 hover:scale-105 hover:border-rose-400/40 hover:shadow-[0_0_50px_rgba(244,63,94,0.3)]"
             >
               <div className="absolute -top-6 -right-5 w-20 h-20 bg-linear-to-br from-rose-400 to-rose-600 rounded-3xl flex items-center justify-center shadow-2xl shadow-rose-500/50 group-hover:rotate-12 transition-transform duration-500">
@@ -248,7 +248,7 @@ export default function Home() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.5 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
+              transition={{ duration: 0.5, delay: 0.8 }}
               className="group relative bg-linear-to-br from-sky-500/10 to-sky-600/5 backdrop-blur-sm border border-sky-500/20 p-8 rounded-3xl transition-all duration-500 hover:scale-105 hover:border-sky-400/40 hover:shadow-[0_0_50px_rgba(14,165,233,0.3)]"
             >
               <div className="absolute -top-6 -right-5 w-20 h-20 bg-linear-to-br from-sky-400 to-sky-600 rounded-3xl flex items-center justify-center shadow-2xl shadow-sky-500/50 group-hover:rotate-12 transition-transform duration-500">
@@ -298,7 +298,7 @@ export default function Home() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.5 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
               className="group text-center p-8 bg-white/5 place-content-center backdrop-blur-sm border border-white/10 rounded-2xl hover:bg-white/10 transition-all duration-300 hover:scale-105"
             >
               <div className="text-3xl  md:text-6xl font-black bg-linear-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent mb-3 group-hover:scale-110 transition-transform">
@@ -312,7 +312,7 @@ export default function Home() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.5 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
+              transition={{ duration: 0.5, delay: 0.8 }}
               className="group text-center p-8 place-content-center bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl hover:bg-white/10 transition-all duration-300 hover:scale-105"
             >
               <div className="text-3xl md:text-6xl font-black bg-linear-to-r from-rose-400 to-pink-400 bg-clip-text text-transparent mb-3 group-hover:scale-110 transition-transform">
@@ -326,7 +326,7 @@ export default function Home() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.5 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
+              transition={{ duration: 0.5, delay: 1.2 }}
               className="group text-center p-8 place-content-center bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl hover:bg-white/10 transition-all duration-300 hover:scale-105"
             >
               <div className="text-3xl md:text-6xl font-black bg-linear-to-r from-sky-400 to-blue-400 bg-clip-text text-transparent mb-3 group-hover:scale-110 transition-transform">
@@ -345,7 +345,7 @@ export default function Home() {
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.5 }}
-        transition={{ duration: 0.5, delay: 0.2 }}
+        transition={{ duration: 0.5, delay: 1.5 }}
         className="py-10"
       >
         <h2 className="text-white text-center mb-5 text-3xl font-bold">
