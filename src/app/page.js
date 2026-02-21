@@ -74,11 +74,10 @@ export default function Home() {
 
         {/* Hero Content */}
         <motion.div
-          whileTap={{ scale: 0.95 }}
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
-          className="relative z-10 max-w-6xl mx-auto text-center"
+          className="relative z-10 max-w-7xl mx-auto text-center"
         >
           <div>
             <div className="inline-block mb-6">
@@ -362,7 +361,7 @@ export default function Home() {
             delay: 0, // بدون توقف بين الكروت
             disableOnInteraction: false,
           }}
-          speed={6000} // سرعة الحركة (أبطأ = أكثر استمرارية)
+          speed={6000} 
           breakpoints={{
             640: { slidesPerView: 2.5 },
             1024: { slidesPerView: 3.5 },

@@ -1,60 +1,9 @@
-// components/TeamCard.jsx
-
 import { motion } from "framer-motion";
 import React from "react";
 
 
 export default function TeamCard({ member }) {
-      const teamMembers = [
-    {
-      name: "أحمد",
-      role: "Front-End & Leader",
-      image:
-        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=faces",
-    },
-    {
-      name: "يمني",
-      role: "مصممة UI/UX",
-      image:
-        "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop&crop=faces",
-    },
-    {
-      name: "محمد",
-      role: "Backend & DevOps",
-      image:
-        "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop&crop=faces",
-    },
-    {
-      name: "ايمان",
-      role: "Data Scientist & AI",
-      image:
-        "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop&crop=faces",
-    },
-    {
-      name: "مايسه",
-      role: "Data Scientist & AI",
-      image:
-        "https://images.unsplash.com/photo-1499952127939-9bbf5af6c51c?q=80&w=1176&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    },
-    {
-      name: "زينب",
-      role: "Data Scientist & AI",
-      image:
-        "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=688&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    },
-    {
-      name: "نجوي",
-      role: "Data Scientist & AI",
-      image:
-        "https://plus.unsplash.com/premium_photo-1690407617686-d449aa2aad3c?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    },
-    {
-      name: "ريم علي",
-      role: "Data Scientist & AI",
-      image:
-        "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop&crop=faces",
-    },
-  ];
+
   const { name, role, image } = member;
 
   return (

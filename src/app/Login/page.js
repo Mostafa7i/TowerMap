@@ -2,18 +2,27 @@
 import { Key, Mail } from "lucide-react";
 import Link from "next/link";
 import React, { useState } from "react";
-import { NotifiyInfo } from "../components/Notify"; // تأكد إن الاسم صحيح (NotifyInfo غالباً)
+import {
+  NotifiyErorr,
+  NotifiyInfo,
+  NotifiySuccess,
+} from "../components/Notify"; // تأكد إن الاسم صحيح (NotifyInfo غالباً)
 import { motion } from "framer-motion";
+import API from "../services/api";
+import { useRouter } from "next/navigation";
+import { useAuth } from "../context/AuthContext";
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
-
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const { setUser  , getMe, setLoggedIn} = useAuth();
 
+  
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -26,7 +35,6 @@ export default function LoginPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     // تصفير الرسائل القديمة
     setError("");
 
@@ -43,23 +51,25 @@ export default function LoginPage() {
       return;
     }
 
-    // لو عايز تضيف تحقق أقوى للإيميل (اختياري)
-    // const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    // if (!emailRegex.test(formData.email)) {
-    //   setError("الإيميل غير صحيح");
-    //   NotifiyInfo("الإيميل غير صحيح");
-    //   return;
-    // }
-
     try {
-      setIsLoading(true);
+      const res = await API.post("/auth/login", formData);
+      setUser(res.data.user);
+      await getMe()
+      setLoggedIn(true);
+      NotifiySuccess(res.data.message);
 
       console.log("تسجيل دخول:", formData);
 
-      NotifiyInfo("جاري تسجيل الدخول...");
-
-    } catch (err) {
-      console.error(err);
+      setTimeout(() => {
+        router.push("/dashboard");
+      }, 2000);
+    } catch (error) {
+      console.error(error);
+      const details = error.response?.data?.details;
+      if (Array.isArray(details)) {
+        details.forEach((err) => NotifiyErorr(err));
+        console.log(error.response?.data?.message);
+      }
       setError("حدث خطأ أثناء تسجيل الدخول");
       NotifiyInfo("حدث خطأ، حاول مرة أخرى");
     } finally {
@@ -69,12 +79,13 @@ export default function LoginPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12">
-      <motion.div 
-           whileTap={{ scale: 0.95 }}
+      <motion.div
+        whileTap={{ scale: 0.95 }}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, delay: 0.2 }}
-      className="w-full max-w-md overflow-hidden rounded-3xl shadow-2xl">
+        className="w-full max-w-md overflow-hidden rounded-3xl shadow-2xl"
+      >
         {/* الهيدر */}
         <div className="bg-linear-to-r from-green-600 to-indigo-600 p-8 text-center">
           <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-linear-to-br from-lime-500 to-indigo-500 text-2xl font-bold text-white animate-pulse">
@@ -84,7 +95,11 @@ export default function LoginPage() {
         </div>
 
         {/* الفورم */}
-        <form onSubmit={handleSubmit} className="bg-white p-8 space-y-6" dir="rtl">
+        <form
+          onSubmit={handleSubmit}
+          className="bg-white p-8 space-y-6"
+          dir="rtl"
+        >
           {error && (
             <div className="rounded-lg bg-red-50 p-3 text-center text-red-700">
               {error}
@@ -93,7 +108,10 @@ export default function LoginPage() {
 
           {/* حقل الإيميل */}
           <div className="relative">
-            <label htmlFor="email" className="mb-1 block text-lg font-medium text-gray-700">
+            <label
+              htmlFor="email"
+              className="mb-1 block text-lg font-medium text-gray-700"
+            >
               الإيميل
             </label>
             <div className="relative">
@@ -114,7 +132,10 @@ export default function LoginPage() {
 
           {/* حقل كلمة المرور */}
           <div className="relative">
-            <label htmlFor="password" className="mb-1 block text-lg font-medium text-gray-700">
+            <label
+              htmlFor="password"
+              className="mb-1 block text-lg font-medium text-gray-700"
+            >
               كلمة المرور
             </label>
             <div className="relative">
@@ -138,6 +159,7 @@ export default function LoginPage() {
             type="submit"
             disabled={isLoading}
             className={`
+              cursor-pointer
               w-full rounded-2xl px-6 py-3.5 text-xl font-bold text-white 
               bg-linear-to-r from-green-500 to-indigo-600 
               hover:from-green-600 hover:to-indigo-700 

@@ -6,6 +6,9 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { useState } from "react";
 import { motion } from "framer-motion";
+import API from "../services/api";
+import { NotifiyErorr, NotifiySuccess } from "../components/Notify";
+import { useRouter } from "next/navigation";
 
 const registerSchema = Yup.object({
   fullName: Yup.string()
@@ -37,35 +40,31 @@ const registerSchema = Yup.object({
 
 export default function RegisterPage() {
   const [isLoading, setIsLoading] = useState(false);
-
-  const handleSubmit = async (
-    values,
-    { setSubmitting, resetForm, setFieldError },
-  ) => {
-    setIsLoading(true);
+  const router = useRouter()
+  const handleSubmit = async (values, formikHelpers) => {
+    const { setSubmitting, setFieldError } = formikHelpers;
 
     try {
-      if (!res.ok) {
-        // مثال: لو الإيميل موجود بالفعل
-        if (data.error?.includes("email")) {
-          setFieldError("email", "البريد الإلكتروني مستخدم من قبل");
-        }
-        throw new Error(data.message || "فشل إنشاء الحساب");
+      await API.post("/auth/register" , values)
+      NotifiySuccess("Account Created!")
+      setTimeout(() =>{
+        router.push("/Login")
+      } , 2000)
+    } catch (error) {
+      console.log(error)
+      const data = error.response?.data;
+      if(data?.details){
+        data?.details.forEach(msg =>{
+          const field = msg.split('"')[1]
+          setFieldError(field , msg)
+        })
+        return ;
       }
-
-      // NotifiyInfo("تم إنشاء الحساب بنجاح! 🎉");
-      alert("تم التسجيل بنجاح!"); // مؤقت
-
-      resetForm();
-      // router.push("/login");   ← لو عايز توجّهه لصفحة اللوجن
-    } catch (err) {
-      console.error("Register error:", err);
-      // NotifiyInfo(err.message || "حدث خطأ أثناء التسجيل");
-      alert(err.message || "حدث خطأ");
-    } finally {
-      setIsLoading(false);
-      setSubmitting(false);
+      NotifiyErorr(data?.message || "حدث خطأ")
+    }finally{
+      setSubmitting(false)
     }
+
   };
 
   return (

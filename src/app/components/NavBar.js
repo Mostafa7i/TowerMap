@@ -12,10 +12,9 @@ import {
   LayoutDashboardIcon,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
-// import { useAuth } from "../context/AuthContent";
 
 export default function Navbar() {
-  const { user, logOut , loading , isLoggedIn } = useAuth()
+  const { user, logOut , loading  } = useAuth()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [alertsDropdownOpen, setAlertsDropdownOpen] = useState(false);
   const [towers, setTowers] = useState([]); 
@@ -24,15 +23,15 @@ export default function Navbar() {
     (t) => t.status === "warning" || t.status === "critical"
   ).length;
 
-
+console.log(user)
   const navItems = [
     { name: "الرئيسية", path: "/", icon: Home },
     { name: "لوحة التحكم", path: "/dashboard", icon: LayoutDashboardIcon },
   ];
 
-  // const isLoggedIn = !!user;
+  const isLoggedIn = !!user;
 
-  if(loading) return <nav className="bg-linear-to-r from-gray-300 to-gray-500 animate-pulse  shadow-xl border-b h-20 border-gray-200 sticky top-0 z-50"></nav>
+  if(loading) return <nav className="bg-linear-to-r from-gray-800 to-gray-500 animate-pulse  shadow-xl border-b h-20 border-gray-200 sticky top-0 z-50"></nav>
   return (
     <nav className="bg-linear-to-r from-gray-700 to-gray-950  shadow-xl border-b border-gray-200 sticky top-0 z-50">
       <div className="max-w-8xl mx-auto px-4">

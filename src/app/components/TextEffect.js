@@ -35,7 +35,7 @@ const TextEffect = () => {
 
   return (
     <div>
-      <span className="text-green-400 drop-shadow animate-pulse">|</span>
+      <span className="animate-ping">|</span>
       <span className="drop-shadow">{text}</span>
     </div>
   );
