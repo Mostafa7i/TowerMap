@@ -51,7 +51,7 @@ export default function RegisterPage() {
         router.push("/Login")
       } , 2000)
     } catch (error) {
-      console.log(error)
+      console.error(error)
       const data = error.response?.data;
       if(data?.details){
         data?.details.forEach(msg =>{
