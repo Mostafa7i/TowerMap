@@ -7,6 +7,7 @@ import { Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/autoplay";
 import TeamCard from "./components/TeamCard";
+import { Counter } from "./components/Counter";
 
 export default function Home() {
   const teamMembers = [
@@ -287,7 +288,7 @@ export default function Home() {
               className="group text-center   p-8 bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl hover:bg-white/1 transition-all duration-300 hover:scale-105"
             >
               <div className="text-4xl md:text-6xl font-black bg-linear-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-transparent mb-3 group-hover:scale-110 transition-transform">
-                4
+                <Counter value={4} />
               </div>
               <p className="text-gray-400 text-lg font-medium">شركات اتصال</p>
             </motion.div>
@@ -301,7 +302,8 @@ export default function Home() {
               className="group text-center p-8 bg-white/5 place-content-center backdrop-blur-sm border border-white/10 rounded-2xl hover:bg-white/10 transition-all duration-300 hover:scale-105"
             >
               <div className="text-3xl  md:text-6xl font-black bg-linear-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent mb-3 group-hover:scale-110 transition-transform">
-                24/7
+                
+                <Counter value={24} />/<Counter value={7} />
               </div>
               <p className="text-gray-400 text-lg font-medium">دعم فني</p>
             </motion.div>
@@ -315,7 +317,7 @@ export default function Home() {
               className="group text-center p-8 place-content-center bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl hover:bg-white/10 transition-all duration-300 hover:scale-105"
             >
               <div className="text-3xl md:text-6xl font-black bg-linear-to-r from-rose-400 to-pink-400 bg-clip-text text-transparent mb-3 group-hover:scale-110 transition-transform">
-                99.9%
+                 <Counter value={99} />.<Counter value={9} />%
               </div>
               <p className="text-gray-400 text-lg font-medium">نسبة تشغيل</p>
             </motion.div>
@@ -329,7 +331,7 @@ export default function Home() {
               className="group text-center p-8 place-content-center bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl hover:bg-white/10 transition-all duration-300 hover:scale-105"
             >
               <div className="text-3xl md:text-6xl font-black bg-linear-to-r from-sky-400 to-blue-400 bg-clip-text text-transparent mb-3 group-hover:scale-110 transition-transform">
-                500+
+                <Counter value={500} />+
               </div>
               <p className="text-gray-400 text-lg font-medium">
                 برج تحت المراقبة
