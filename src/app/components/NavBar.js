@@ -176,7 +176,7 @@ console.log(user)
 
       {/* Mobile Menu Content */}
       {mobileMenuOpen && (
-        <div className="md:hidden  border-t border-gray-200">
+        <div className="md:hidden  border-t z-50 border-gray-200">
           <div className="px-4 py-6 space-y-3">
             {isLoggedIn ? (
               <>

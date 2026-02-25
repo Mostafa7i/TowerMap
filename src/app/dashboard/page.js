@@ -48,6 +48,7 @@ export default function DashboardPage() {
         isOpen={sidebarOpen}
         toggle={() => setSidebarOpen(!sidebarOpen)}
         activeView={activeView}
+        closeSidebar={() => setSidebarOpen(false)}
         setActiveView={setActiveView}
       />
 

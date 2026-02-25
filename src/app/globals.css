@@ -120,6 +120,10 @@ body {
   --sidebar-ring: oklch(0.552 0.016 285.938);
 }
 
+.leaflet-map-container{
+    position: relative;
+  z-index: 1 !important; 
+}
 @layer base {
   * {
     @apply border-border outline-ring/50;
