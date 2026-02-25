@@ -7,7 +7,11 @@ import {
   Trash,
 } from "lucide-react";
 import React from "react";
-import TowerMap from "./TowerMap";
+import dynamic from "next/dynamic";
+
+const TowerMap = dynamic(() => import("./TowerMap"), {
+  ssr: false,
+});
 
 export default function Overview({user, towers, onDelete , stats }) {
   return (
