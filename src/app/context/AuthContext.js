@@ -32,6 +32,7 @@ const logOut = async () =>{
   try {
     await API.post("/auth/logout")
     NotifiyInfo("LogOut successfully!")
+    setLoggedIn(false)
     router.push("/Login")
   } catch (error) {
       NotifiyErorr(error)
