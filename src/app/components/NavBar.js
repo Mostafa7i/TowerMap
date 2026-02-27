@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { usePathname } from "next/navigation";
+import SplashScreen from "./SplashScreen";
 
 export default function Navbar() {
   const { user, logOut, loading } = useAuth();
@@ -32,10 +33,7 @@ export default function Navbar() {
 
   const isLoggedIn = !!user;
 
-  if (loading)
-    return (
-      <nav className="bg-linear-to-r from-gray-800 to-gray-500 animate-pulse  shadow-xl border-b h-20 border-gray-200 sticky top-0 z-50"></nav>
-    );
+  if (loading) return <SplashScreen />;
   return (
     <nav className="bg-linear-to-r from-gray-700 to-gray-950  shadow-xl border-b border-gray-200 sticky top-0 z-50">
       <div className="max-w-8xl mx-auto px-4">
@@ -220,21 +218,21 @@ export default function Navbar() {
                 {navItems.map((item) => {
                   const isActive = pathname === item.path;
 
-                 return(
-                   <Link
-                    key={item.name}
-                    href={item.path}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className={`${
-                      isActive
-                        ? "flex items-center gap-2 px-2 py-3 rounded-xl text-indigo-600  bg-indigo-50 font-medium transition-all duration-200"
-                        : "text-gray-500 flex items-center gap-2 px-2 py-3 rounded-xl"
-                    } hover:text-indigo-500 transition-colors`}
-                  >
-                    <item.icon size={22} />
-                    <span>{item.name}</span>
-                  </Link>
-                 )
+                  return (
+                    <Link
+                      key={item.name}
+                      href={item.path}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className={`${
+                        isActive
+                          ? "flex items-center gap-2 px-2 py-3 rounded-xl text-indigo-600  bg-indigo-50 font-medium transition-all duration-200"
+                          : "text-gray-500 flex items-center gap-2 px-2 py-3 rounded-xl"
+                      } hover:text-indigo-500 transition-colors`}
+                    >
+                      <item.icon size={22} />
+                      <span>{item.name}</span>
+                    </Link>
+                  );
                 })}
 
                 {/* التنبيهات في الموبايل */}
