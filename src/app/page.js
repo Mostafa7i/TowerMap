@@ -62,7 +62,7 @@ export default function Home() {
   return (
     <div className="relative overflow-hidden bg-slate-950" dir="rtl">
       {/* Hero Section */}
-      <div className="relative min-h-\[100svh]\ flex flex-col items-center justify-center px-6 overflow-hidden">
+      <div className="relative min-h-svh flex flex-col items-center justify-center px-6 overflow-hidden">
         {/* Animated Background */}
         <div className="absolute inset-0 bg-linear-to-br from-violet-950 via-slate-950 to-fuchsia-950">
           <div className="absolute inset-0 opacity-30">
