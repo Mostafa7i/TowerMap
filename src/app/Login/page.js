@@ -34,12 +34,11 @@ export default function LoginPage() {
     if (error) setError("");
   };
 
-  const handleSubmit = async (e) => {
+const handleSubmit = async (e) => {
     e.preventDefault();
-    // تصفير الرسائل القديمة
     setError("");
 
-    // التحقق من الحقول
+    // 1. التحقق من الحقول أولاً
     if (!formData.email.trim()) {
       setError("الإيميل مطلوب");
       NotifiyInfo("الإيميل مطلوب");
@@ -52,14 +51,15 @@ export default function LoginPage() {
       return;
     }
 
+    // 2. تفعيل حالة التحميل هنا 
+    setIsLoading(true); 
+
     try {
       const res = await API.post("/auth/login", formData);
       setUser(res.data.user);
-      await getMe()
+      await getMe();
       setLoggedIn(true);
       NotifiySuccess(res.data.message);
-
-      console.log("تسجيل دخول:", formData);
 
       setTimeout(() => {
         router.push("/dashboard");
@@ -69,7 +69,6 @@ export default function LoginPage() {
       const details = error.response?.data?.details;
       if (Array.isArray(details)) {
         details.forEach((err) => NotifiyErorr(err));
-        console.log(error.response?.data?.message);
       }
       setError("حدث خطأ أثناء تسجيل الدخول");
       NotifiyInfo("حدث خطأ، حاول مرة أخرى");
@@ -77,7 +76,6 @@ export default function LoginPage() {
       setIsLoading(false);
     }
   };
-
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12">
       <motion.div
