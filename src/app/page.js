@@ -62,7 +62,7 @@ export default function Home() {
   return (
     <div className="relative overflow-hidden bg-slate-950" dir="rtl">
       {/* Hero Section */}
-      <div className="relative min-h-dvh flex flex-col items-center justify-center px-6 overflow-hidden">
+      <div className="relative min-h-\[100svh]\ flex flex-col items-center justify-center px-6 overflow-hidden">
         {/* Animated Background */}
         <div className="absolute inset-0 bg-linear-to-br from-violet-950 via-slate-950 to-fuchsia-950">
           <div className="absolute inset-0 opacity-30">
@@ -71,7 +71,7 @@ export default function Home() {
             <div className="absolute bottom-1/4 left-1/2 w-96 h-96 bg-indigo-600 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-4000"></div>
           </div>
         </div>
-            <div className="inline-block -mt-32 mb-12">
+            <div className="inline-block -mt-20 md:-mt-32 mb-12">
               <span className="bg-violet-500/20 border border-violet-500/30 text-violet-200 px-6 py-2 rounded-full text-sm font-medium backdrop-blur-sm">
                 نظام المراقبة الذكي الجديد 2025 ✨
               </span>
@@ -88,7 +88,7 @@ export default function Home() {
 
             <h1
               dir="ltr"
-              className="font-black text-2xl md:text-7xl text-white h-15 md:h-30 leading-tight"
+              className="font-black text-2xl md:text-7xl text-white h-16 md:h-30 leading-tight"
             >
               <TextEffect />
             </h1>
