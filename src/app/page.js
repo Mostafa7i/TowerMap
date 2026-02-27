@@ -15,23 +15,25 @@ export default function Home() {
   const { isLoggedIn } = useAuth();
   const teamMembers = [
     {
-      name: "أحمد",
-      role: "Front-End & Leader",
-      image:
-        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=faces",
+      name: "أحمد سليمان",
+      role: "Backend & Leader",
+      image:  "/pic/ahmed_seliman.jpeg"
     },
     {
-      name: "محمد",
-      role: "Backend & DevOps",
-      image:
-        "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop&crop=faces",
+      name: "أحمد محمد",
+      role: "Front-End",
+      image: "/pic/ahmed_mohamed.jpeg"
     },
     {
-      name: "مايسه",
-      role: "Data Scientist & AI",
-      image:
-        "https://images.unsplash.com/photo-1499952127939-9bbf5af6c51c?q=80&w=1176&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    },
+      name: "نسرين ابراهيم",
+      role: "Front-End",
+      image: "/pic/nesreen.jpeg"
+        },
+    {
+      name: "نسرين ابراهيم",
+      role: "Back-End",
+      image: "/pic/rehab.jpeg"
+        },
 
     {
       name: "يمني",
