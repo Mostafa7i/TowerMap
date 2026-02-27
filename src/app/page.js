@@ -8,8 +8,11 @@ import "swiper/css";
 import "swiper/css/autoplay";
 import TeamCard from "./components/TeamCard";
 import { Counter } from "./components/Counter";
+import { useAuth } from "./context/AuthContext";
+import Link from "next/link";
 
 export default function Home() {
+  const { isLoggedIn } = useAuth();
   const teamMembers = [
     {
       name: "أحمد",
@@ -30,7 +33,7 @@ export default function Home() {
         "https://images.unsplash.com/photo-1499952127939-9bbf5af6c51c?q=80&w=1176&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     },
 
-     {
+    {
       name: "يمني",
       role: "Back-End",
       image: "/pic/yomna.jpeg",
@@ -46,7 +49,7 @@ export default function Home() {
       image: "/pic/nagwa.jpeg",
     },
     {
-      name:"ايمان رضا",
+      name: "ايمان رضا",
       role: "Front-End",
       image: "/pic/eman.jpeg",
     },
@@ -103,7 +106,7 @@ export default function Home() {
               الاصطناعي
             </motion.p>
 
-            <div className="flex flex-wrap justify-center gap-6">
+            <div className="flex flex-wrap justify-center gap-4">
               <motion.button
                 whileHover={{
                   scale: 1.05,
@@ -113,13 +116,15 @@ export default function Home() {
                 initial={{ opacity: 0, x: 40 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.9, delay: 0.9 }}
-                className="group relative px-10 py-5 bg-linear-to-r from-violet-600 to-fuchsia-600 text-white rounded-2xl font-bold text-lg overflow-hidden transition-all duration-300 hover:shadow-[0_0_40px_rgba(139,92,246,0.6)] hover:scale-105"
+                className="group relative px-6 py-5 bg-linear-to-r from-violet-600 to-fuchsia-600 text-white rounded-2xl font-bold text-lg overflow-hidden transition-all duration-300 hover:shadow-[0_0_40px_rgba(139,92,246,0.6)] hover:scale-105"
               >
-                <span className="relative z-10 flex items-center gap-3">
-                  تجربة مجانية
-                  <ArrowLeft className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                </span>
-                <div className="absolute inset-0 bg-linear-to-r from-fuchsia-600 to-violet-600 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <Link href={isLoggedIn ? "/dashboard" : "/Login"}>
+                  <span className="relative z-10 flex items-center gap-3">
+                    {isLoggedIn ? "تجربة مجانية" : "سجل دخولك الان"}
+                    <ArrowLeft className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  </span>
+                  <div className="absolute inset-0 bg-linear-to-r from-fuchsia-600 to-violet-600 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                </Link>
               </motion.button>
 
               <motion.button
@@ -131,7 +136,7 @@ export default function Home() {
                 initial={{ opacity: 0, x: -40 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.9, delay: 0.9 }}
-                className="px-10 py-5 bg-white/10 backdrop-blur-md border-2 border-white/20 text-white rounded-2xl font-bold text-lg transition-all duration-300 hover:bg-white/20 hover:border-white/40 hover:scale-105"
+                className="px-8 py-5 bg-white/10 backdrop-blur-md border-2 border-white/20 text-white rounded-2xl font-bold text-lg transition-all duration-300 hover:bg-white/20 hover:border-white/40 hover:scale-105"
               >
                 عرض توضيحي
               </motion.button>
@@ -298,7 +303,6 @@ export default function Home() {
               className="group text-center p-8 bg-white/5 place-content-center backdrop-blur-sm border border-white/10 rounded-2xl hover:bg-white/10 transition-all duration-300 hover:scale-105"
             >
               <div className="text-3xl  md:text-6xl font-black bg-linear-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent mb-3 group-hover:scale-110 transition-transform">
-                
                 <Counter value={24} />/<Counter value={7} />
               </div>
               <p className="text-gray-400 text-lg font-medium">دعم فني</p>
@@ -313,7 +317,7 @@ export default function Home() {
               className="group text-center p-8 place-content-center bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl hover:bg-white/10 transition-all duration-300 hover:scale-105"
             >
               <div className="text-3xl md:text-6xl font-black bg-linear-to-r from-rose-400 to-pink-400 bg-clip-text text-transparent mb-3 group-hover:scale-110 transition-transform">
-                 <Counter value={99} />.<Counter value={9} />%
+                <Counter value={99} />.<Counter value={9} />%
               </div>
               <p className="text-gray-400 text-lg font-medium">نسبة تشغيل</p>
             </motion.div>
@@ -359,7 +363,7 @@ export default function Home() {
             delay: 0, // بدون توقف بين الكروت
             disableOnInteraction: false,
           }}
-          speed={6000} 
+          speed={6000}
           breakpoints={{
             640: { slidesPerView: 2.5 },
             1024: { slidesPerView: 3.5 },
