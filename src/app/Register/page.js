@@ -9,6 +9,7 @@ import { motion } from "framer-motion";
 import API from "../services/api";
 import { NotifiyErorr, NotifiySuccess } from "../components/Notify";
 import { useRouter } from "next/navigation";
+import { useAuth } from "../context/AuthContext";
 
 const registerSchema = Yup.object({
   fullName: Yup.string()
@@ -40,31 +41,37 @@ const registerSchema = Yup.object({
 
 export default function RegisterPage() {
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter()
+  const { setUser, getMe, setLoggedIn } = useAuth();
+
+  const router = useRouter();
+
   const handleSubmit = async (values, formikHelpers) => {
     const { setSubmitting, setFieldError } = formikHelpers;
 
     try {
-      await API.post("/auth/register" , values)
-      NotifiySuccess("Account Created!")
-      setTimeout(() =>{
-        router.push("/Login")
-      } , 2000)
-    } catch (error) {
-      console.error(error)
-      const data = error.response?.data;
-      if(data?.details){
-        data?.details.forEach(msg =>{
-          const field = msg.split('"')[1]
-          setFieldError(field , msg)
-        })
-        return ;
-      }
-      NotifiyErorr(data?.message || "حدث خطأ")
-    }finally{
-      setSubmitting(false)
-    }
+      const res = await API.post("/auth/register", values);
+      NotifiySuccess("Account Created!");
+      setUser(res.data.user);
+      await getMe();
+      setLoggedIn(true);
 
+      setTimeout(() => {
+        router.push("/Login");
+      }, 2000);
+    } catch (error) {
+      console.error(error);
+      const data = error.response?.data;
+      if (data?.details) {
+        data?.details.forEach((msg) => {
+          const field = msg.split('"')[1];
+          setFieldError(field, msg);
+        });
+        return;
+      }
+      NotifiyErorr(data?.message || "حدث خطأ");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -97,7 +104,7 @@ export default function RegisterPage() {
           validationSchema={registerSchema}
           onSubmit={handleSubmit}
         >
-          {({ isSubmitting, touched }) => (
+          {({ isSubmitting }) => (
             <Form className="bg-white px-8 pb-10 pt-6 space-y-5" dir="rtl">
               {/* الاسم الكامل */}
               <div className="relative">

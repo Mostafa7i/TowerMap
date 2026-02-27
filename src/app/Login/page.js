@@ -17,6 +17,7 @@ export default function LoginPage() {
     email: "",
     password: "",
   });
+  
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");

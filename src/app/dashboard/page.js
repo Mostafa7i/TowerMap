@@ -1,12 +1,12 @@
 //dashboard
 "use client";
 import React, { useState } from "react";
+import { User2, LayoutDashboard, Loader2 } from "lucide-react";
 import { useAuth } from "@/app/context/AuthContext";
 import Sidebar from "@/app/components/Sidebar";
 import Reports from "@/app/components/Reports";
 import Settings from "@/app/components/Settings";
 import Overview from "@/app/components/Overview";
-import { User2, LayoutDashboard, Loader2 } from "lucide-react";
 import CreateTower from "@/app/components/CreateTower";
 
 export default function DashboardPage() {

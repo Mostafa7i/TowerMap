@@ -4,7 +4,7 @@ const nextConfig = {
     return [
       {
         source: '/api/:path*',
-        destination: 'https://tower-map-back-end.vercel.app/api/:path*', // رابط الباك اند بتاعك
+        destination: 'https://tower-map-back-end.vercel.app/api/:path*', 
       },
     ]
   },

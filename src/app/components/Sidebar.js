@@ -7,7 +7,6 @@ import {
   ChevronUp,
   FileBarChart2,
   LayoutDashboard,
-  Menu,
   PlusCircle,
   Settings,
   X,

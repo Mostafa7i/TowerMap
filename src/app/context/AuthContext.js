@@ -10,6 +10,7 @@ export const AuthContext = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter()
+  
   const getMe = async () => {
     try {
       setLoading(true);
