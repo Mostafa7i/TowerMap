@@ -30,7 +30,7 @@ export default function Home() {
       image: "/pic/nesreen.jpeg"
         },
     {
-      name: "نسرين ابراهيم",
+      name: "رحاب محسن",
       role: "Back-End",
       image: "/pic/rehab.jpeg"
         },

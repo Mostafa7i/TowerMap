@@ -89,22 +89,37 @@ export default function LoginPage() {
         className="w-full max-w-md overflow-hidden rounded-3xl shadow-2xl"
       >
         {/* الهيدر */}
-        <div className="bg-linear-to-r from-green-600 to-indigo-600 p-8 text-center">
-          <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-linear-to-br from-lime-500 to-indigo-500 text-2xl font-bold text-white animate-pulse">
+        <div className="bg-linear-to-r from-green-600 to-indigo-600 p-5 text-center">
+          <motion.div
+            whileTap={{ scale: 0.95 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-linear-to-br from-lime-500 to-indigo-500 text-xl font-bold text-white animate-pulse"
+          >
             Tower
-          </div>
-          <h2 className="text-2xl font-bold text-white">سجل دخولك الآن</h2>
+          </motion.div>
+          <motion.h2
+            whileTap={{ scale: 0.95 }}
+            initial={{ opacity: 0, y: 1 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.8 }}
+            className="text-xl font-bold text-white"
+          >
+            سجل دخولك الآن
+          </motion.h2>
         </div>
 
         {/* الفورم */}
         <form
           onSubmit={handleSubmit}
-          className="bg-white p-8 space-y-6"
+          className="bg-white p-7 space-y-5"
           dir="rtl"
         >
           {error && (
-            <motion.div 
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
               className="rounded-lg bg-red-50 p-4 text-center text-red-700 border border-red-200"
             >
               {error}
@@ -112,7 +127,13 @@ export default function LoginPage() {
           )}
 
           {/* حقل الإيميل */}
-          <div className="relative">
+          <motion.div
+            whileTap={{ scale: 0.95 }}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+            className="relative"
+          >
             <label
               htmlFor="email"
               className="mb-1 block text-lg font-medium text-gray-700"
@@ -133,10 +154,16 @@ export default function LoginPage() {
               />
               <Mail className="absolute right-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-500" />
             </div>
-          </div>
+          </motion.div>
 
           {/* حقل كلمة المرور */}
-          <div className="relative">
+          <motion.div
+            whileTap={{ scale: 0.95 }}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+            className="relative"
+          >
             <label
               htmlFor="password"
               className="mb-1 block text-lg font-medium text-gray-700"
@@ -157,10 +184,14 @@ export default function LoginPage() {
               />
               <Key className="absolute right-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-500" />
             </div>
-          </div>
+          </motion.div>
 
           {/* زر الإرسال */}
-          <button
+          <motion.button
+           whileTap={{ scale: 0.95 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
             type="submit"
             disabled={isLoading}
             className={`
@@ -175,7 +206,7 @@ export default function LoginPage() {
             `}
           >
             {isLoading ? "جاري التحميل..." : "تسجيل الدخول"}
-          </button>
+          </motion.button>
 
           {/* رابط التسجيل */}
           <p className="text-center text-gray-600">
