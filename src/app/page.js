@@ -71,6 +71,11 @@ export default function Home() {
             <div className="absolute bottom-1/4 left-1/2 w-96 h-96 bg-indigo-600 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-4000"></div>
           </div>
         </div>
+            <div className="inline-block -mt-32 mb-12">
+              <span className="bg-violet-500/20 border border-violet-500/30 text-violet-200 px-6 py-2 rounded-full text-sm font-medium backdrop-blur-sm">
+                نظام المراقبة الذكي الجديد 2025 ✨
+              </span>
+            </div>
 
         {/* Hero Content */}
         <motion.div
@@ -80,11 +85,6 @@ export default function Home() {
           className="relative z-10 max-w-7xl mx-auto text-center"
         >
           <div>
-            <div className="inline-block mb-6">
-              <span className="bg-violet-500/20 border border-violet-500/30 text-violet-200 px-6 py-2 rounded-full text-sm font-medium backdrop-blur-sm">
-                نظام المراقبة الذكي الجديد 2025 ✨
-              </span>
-            </div>
 
             <h1
               dir="ltr"
