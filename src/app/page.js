@@ -88,7 +88,7 @@ export default function Home() {
 
             <h1
               dir="ltr"
-              className="font-black text-2xl md:text-7xl text-white mb-6 leading-tight"
+              className="font-black text-2xl md:text-7xl text-white h-15 md:h-30 leading-tight"
             >
               <TextEffect />
             </h1>
@@ -98,7 +98,7 @@ export default function Home() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.9, delay: 0.7 }}
-              className="text-gray-300 text-lg md:text-2xl max-w-4xl mx-auto leading-relaxed mb-12 font-light"
+              className="text-gray-300 text-lg md:text-2xl max-w-5xl mx-auto leading-relaxed mb-8 font-light"
             >
               راقب أداء الشبكة، اكتشف الأعطال قبل حدوثها، وتجنب انقطاع الخدمة
               باستخدام تقنية{" "}
@@ -136,7 +136,8 @@ export default function Home() {
                 initial={{ opacity: 0, x: -40 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.9, delay: 0.9 }}
-                className="px-8 py-5 bg-white/10 backdrop-blur-md border-2 border-white/20 text-white rounded-2xl font-bold text-lg transition-all duration-300 hover:bg-white/20 hover:border-white/40 hover:scale-105"
+                onClick={() => alert("تنبية: لازال قيد التطوير!")}
+                className="px-8 py-5 cursor-pointer bg-white/10 backdrop-blur-md border-2 border-white/20 text-white rounded-2xl font-bold text-lg transition-all duration-300 hover:bg-white/20 hover:border-white/40 hover:scale-105"
               >
                 عرض توضيحي
               </motion.button>
