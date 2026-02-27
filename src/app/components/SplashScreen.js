@@ -4,7 +4,7 @@ import { Radio } from "lucide-react"; // أو Radio لو تفضلها
 
 export default function SplashScreen() {
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-gray-900 text-white">
+    <div className="fixed inset-0 z-9999 flex items-center justify-center bg-gray-900 text-white">
       <div className="flex flex-col items-center">
         {/* أيقونة البرج مع أنيميشن البث */}
         <motion.div

@@ -17,13 +17,12 @@ export default function LoginPage() {
     email: "",
     password: "",
   });
-  
+
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const { setUser  , getMe, setLoggedIn} = useAuth();
+  const { setUser, getMe, setLoggedIn } = useAuth();
 
-  
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -34,26 +33,27 @@ export default function LoginPage() {
     if (error) setError("");
   };
 
-const handleSubmit = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    // تصفير الرسائل القديمة
     setError("");
 
-    // 1. التحقق من الحقول أولاً
+    // التحقق من الحقول
     if (!formData.email.trim()) {
       setError("الإيميل مطلوب");
       NotifiyInfo("الإيميل مطلوب");
       return;
     }
-
+    if (!/^\S+@\S+\.\S+$/.test(formData.email)) {
+      setError("الرجاء إدخال بريد إلكتروني صحيح");
+      return;
+    }
     if (!formData.password.trim()) {
       setError("كلمة المرور مطلوبة");
       NotifiyInfo("كلمة المرور مطلوبة");
       return;
     }
-
-    // 2. تفعيل حالة التحميل هنا 
-    setIsLoading(true); 
-
+    setIsLoading(true);
     try {
       const res = await API.post("/auth/login", formData);
       setUser(res.data.user);
@@ -61,14 +61,17 @@ const handleSubmit = async (e) => {
       setLoggedIn(true);
       NotifiySuccess(res.data.message);
 
+      console.log("تسجيل دخول:", formData);
+
       setTimeout(() => {
         router.push("/dashboard");
-      }, 2000);
+      }, 800);
     } catch (error) {
       console.error(error);
       const details = error.response?.data?.details;
       if (Array.isArray(details)) {
         details.forEach((err) => NotifiyErorr(err));
+        console.log(error.response?.data?.message);
       }
       setError("حدث خطأ أثناء تسجيل الدخول");
       NotifiyInfo("حدث خطأ، حاول مرة أخرى");
@@ -100,9 +103,12 @@ const handleSubmit = async (e) => {
           dir="rtl"
         >
           {error && (
-            <div className="rounded-lg bg-red-50 p-3 text-center text-red-700">
+            <motion.div 
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+              className="rounded-lg bg-red-50 p-4 text-center text-red-700 border border-red-200"
+            >
               {error}
-            </div>
+            </motion.div>
           )}
 
           {/* حقل الإيميل */}
