@@ -36,7 +36,7 @@ export default function Home() {
         },
 
     {
-      name: "يمني",
+      name: "يمني ناصر",
       role: "Back-End",
       image: "/pic/yomna.jpeg",
     },
@@ -59,6 +59,21 @@ export default function Home() {
       name: "نور صلاح",
       role: "Front-End",
       image: "/pic/nour.jpeg",
+    },
+    {
+      name: "ملك شريف",
+      role: "Front-End",
+      image: "/pic/malak.jpeg",
+    },
+    {
+      name: "مايسه محمود",
+      role: "Front-End",
+      image: "/pic/maisaa.jpeg",
+    },
+    {
+      name: "شيماء محمد",
+      role: "Front-End",
+      image: "/pic/shimaa.jpeg",
     },
   ];
   return (
