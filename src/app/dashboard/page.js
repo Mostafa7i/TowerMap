@@ -1,6 +1,6 @@
 //dashboard
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { User2, LayoutDashboard, Loader2 } from "lucide-react";
 import { useAuth } from "@/app/context/AuthContext";
 import Sidebar from "@/app/components/Sidebar";
@@ -8,13 +8,40 @@ import Reports from "@/app/components/Reports";
 import Settings from "@/app/components/Settings";
 import Overview from "@/app/components/Overview";
 import CreateTower from "@/app/components/CreateTower";
+import API from "../services/api";
+import SimulatorPage from "../components/Simulator";
 
 export default function DashboardPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { user, loading } = useAuth();
-  const [towers] = useState([]); 
+  const [towers , setTowers] = useState([]); 
   const [activeView, setActiveView] = useState("overview");
 
+
+  const [stats, setStats] = useState({ critical: 0, warning: 0, normal: 0 });
+  const fetchTowers = async () => {
+        try {
+            const response = await API.get("/towerMap/getTower");
+            const data = response.data.data;
+            setTowers(data);
+
+            const stats = {
+                critical: data.filter(t => t.status === 'Danger').length,
+                warning: 0, 
+                normal: data.filter(t => t.status === 'Safe').length,
+            };
+            setStats(stats);
+
+        } catch (error) {
+            console.error("Error fetching towers:", error);
+            console.log(error.message)
+        }
+    };
+    useEffect(() => {
+        fetchTowers(); // أول مرة
+        const interval = setInterval(fetchTowers, 10000); 
+        return () => clearInterval(interval);
+    }, []);
   // تحسين أداء التنقل بين الصفحات
   const renderActiveView = () => {
     switch (activeView) {
@@ -22,11 +49,13 @@ export default function DashboardPage() {
         return <CreateTower towers={towers} />;
       case "reports":
         return <Reports towers={towers} />;
+      case "simulator":
+        return <SimulatorPage towers={towers} />;
       case "settings":
         return <Settings towers={towers} />;
       case "overview":
       default:
-        return <Overview user={user} towers={towers} />;
+        return <Overview user={user} towers={towers}  stats={stats}/>;
     }
   };
 
@@ -52,14 +81,14 @@ export default function DashboardPage() {
         setActiveView={setActiveView}
       />
 
-      <main className="flex-1 flex flex-col h-screen overflow-hidden">
-        <header className="h-20 bg-white border-b border-gray-200 flex items-center justify-between px-8 shadow-sm">
+      <main className="flex-1 flex flex-col h-screen overflow-hidden bg-linear-to-br from-slate-950 via-slate-900 to-slate-950">
+        <header className="h-20 bg-linear-to-br from-slate-950 via-slate-900 to-slate-950 border-b border-gray-200 flex items-center justify-between px-8 shadow-sm">
           <div className="flex items-center gap-3">
             <div className="bg-blue-50 p-2 rounded-lg">
               <LayoutDashboard className="text-blue-600 w-6 h-6" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-gray-800">لوحة التحكم</h1>
+              <h1 className="text-xl font-bold text-gray-200">لوحة التحكم</h1>
               <p className="text-xs text-gray-400">
                 مراقبة أبراج الاتصالات - تحديث حي
               </p>
@@ -68,7 +97,7 @@ export default function DashboardPage() {
 
           <div className="flex items-center gap-4 border-r pr-4">
             <div className="text-left ml-3">
-              <p className="text-sm font-bold text-gray-700 leading-none mb-1">
+              <p className="text-sm font-bold text-gray-200 leading-none mb-1">
                 {user?.fullName || "مستخدم"}
               </p>
               <p className="text-xs text-blue-600 font-medium bg-blue-50 px-2 py-0.5 rounded-full inline-block">

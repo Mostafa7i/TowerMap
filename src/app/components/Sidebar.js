@@ -87,6 +87,13 @@ const handleNavigation = (view) => {
             اضافة برج جديد
           </NavLink>
           <NavLink
+            icon={<PlusCircle />}
+            onClick={() => handleNavigation("simulator")}
+            isActive={activeView === "simulator"}
+          >
+          simulator
+          </NavLink>
+          <NavLink
             icon={<FileBarChart2 />}
             onClick={() => handleNavigation("reports")}
             isActive={activeView === "reports"}

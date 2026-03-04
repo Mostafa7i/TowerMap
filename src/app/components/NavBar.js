@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   LogOut,
   Radio,
@@ -10,10 +10,12 @@ import {
   X,
   AlertTriangle,
   LayoutDashboardIcon,
+  Clock,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { usePathname } from "next/navigation";
 import SplashScreen from "./SplashScreen";
+import API from "../services/api";
 
 export default function Navbar() {
   const { user, logOut, loading } = useAuth();
@@ -22,9 +24,58 @@ export default function Navbar() {
   const [towers, setTowers] = useState([]);
   const pathname = usePathname();
 
-  const alertsCount = towers.filter(
-    (t) => t.status === "warning" || t.status === "critical",
-  ).length;
+
+useEffect(() => {
+  const fetchAlerts = async () => {
+    if (typeof API === 'undefined') {
+        console.warn("API is still undefined, retrying...");
+        return;
+    }
+
+    try {
+      const res = await API.get("/towerMap/getTower");
+      if (res.data && res.data.success) {
+        setTowers(res.data.data);
+      }
+    } catch (err) {
+      console.error("Failed to fetch alerts:", err);
+    }
+  };
+
+  // تأكد من وجود مستخدم قبل بدء الـ Polling
+  if (user) {
+      fetchAlerts();
+      const interval = setInterval(fetchAlerts, 10000);
+      return () => clearInterval(interval);
+  }
+}, [user]);
+const recentAlerts = towers
+  .filter((t) => {
+    const latency = t.lastMeasurement?.latency || 0;
+    const loss = t.lastMeasurement?.packetLoss || 0;
+
+    // 2. شروط العطل (عدل الأرقام دي حسب ما تحب)
+    const isLatencyBad = latency > 150; // لو البنج عالي
+    const isLossBad = loss > 5;        // لو فيه فقد بيانات
+    const isDangerStatus = t.status?.toLowerCase() === "danger";
+
+    // لو أي شرط من دول تحقق، البرج يظهر في التنبيهات فوراً
+    return isLatencyBad || isLossBad || isDangerStatus;
+  })
+  .map(t => {
+    // تحديد لون الأيقونة بناءً على خطورة الرقم
+    const isCritical = (t.lastMeasurement?.latency > 300 || t.lastMeasurement?.packetLoss > 15);
+    
+    return {
+      id: t._id,
+      tower: t.TowerName,
+      type: isCritical ? "critical" : "warning",
+      detail: `Latency: ${t.lastMeasurement?.latency}ms | Loss: ${t.lastMeasurement?.packetLoss}%`,
+      time: t.updatedAt
+    };
+  });
+
+  const alertsCount = recentAlerts.length;
 
   const navItems = [
     { name: "الرئيسية", path: "/", icon: Home },
@@ -87,67 +138,59 @@ export default function Navbar() {
                   >
                     <Bell size={20} />
                     <span>التنبيهات</span>
-                    {alertsCount >= 0 && (
+                    {alertsCount > 0 && (
                       <span className="absolute -top-1 left-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center animate-pulse">
                         {alertsCount}
                       </span>
                     )}
                   </button>
 
-                  {/* Dropdown التنبيهات الحقيقية */}
-                  {/* {alertsDropdownOpen && (
-                    <div className="absolute top-full right-0 mt-2 w-80 bg-white rounded-xl shadow-2xl border border-gray-200 overflow-hidden z-50">
-                      <div className="p-4 border-b border-gray-200 flex items-center justify-between">
-                        <h3 className="font-bold text-black text-md">
-                          آخر التنبيهات
+                 {alertsDropdownOpen && (
+                    <div className="absolute top-full left-0 mt-3 w-85 bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl overflow-hidden z-50 animate-in fade-in slide-in-from-top-2">
+                      <div className="p-4 bg-slate-800/50 border-b border-slate-700 flex items-center justify-between">
+                        <h3 className="font-bold text-white flex items-center gap-2 text-sm">
+                          <Bell size={16} className="text-indigo-400" /> آخر التنبيهات النشطة
                         </h3>
+                        <span className="text-[10px] bg-red-500/20 text-red-400 px-2 py-1 rounded-md">حالة حرجة</span>
                       </div>
-                      <div className="max-h-96 overflow-y-auto">
+
+                      <div className="max-h-[400px] overflow-y-auto custom-scrollbar">
                         {recentAlerts.length === 0 ? (
-                          <p className="p-4 text-center text-green-600 font-medium">
-                            لا توجد تنبيهات حاليًا 🎉
-                          </p>
+                          <div className="p-8 text-center">
+                            <div className="w-12 h-12 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-3">
+                              <X className="text-emerald-500" size={24} />
+                            </div>
+                            <p className="text-slate-400 text-sm font-medium">لا توجد أعطال حالياً.. النظام مستقر</p>
+                          </div>
                         ) : (
                           recentAlerts.map((alert) => (
-                            <div
-                              key={alert.id}
-                              className={`p-4 border-b border-gray-100 hover:bg-gray-50 cursor-pointer ${
-                                alert.type === "critical"
-                                  ? "bg-red-50"
-                                  : "bg-yellow-50"
-                              }`}
-                            >
-                              <div className="flex items-start gap-3">
-                                <AlertTriangle
-                                  size={20}
-                                  className={
-                                    alert.type === "critical"
-                                      ? "text-red-600"
-                                      : "text-yellow-600"
-                                  }
-                                />
-                                <div className="flex-1 text-right">
-                                  <p className="font-semibold">{alert.tower}</p>
-                                  <p className="text-sm text-gray-600">
-                                    {alert.detail}
-                                  </p>
+                            <div key={alert.id} className={`p-4 border-b border-slate-800 hover:bg-slate-800/40 transition-colors cursor-pointer group`}>
+                              <div className="flex items-start gap-3 text-right" dir="rtl">
+                                <div className={`mt-1 p-2 rounded-lg ${alert.type === 'critical' ? 'bg-red-500/10 text-red-500' : 'bg-yellow-500/10 text-yellow-500'}`}>
+                                  <AlertTriangle size={18} />
+                                </div>
+                                <div className="flex-1">
+                                  <p className="font-bold text-slate-100 text-sm group-hover:text-indigo-400 transition-colors">{alert.tower}</p>
+                                  <p className="text-xs text-slate-400 mt-1 font-mono">{alert.detail}</p>
+                                  <div className="flex items-center gap-1 mt-2 text-[10px] text-slate-500">
+                                    <Clock size={10} />
+                                    {new Date(alert.time).toLocaleTimeString("ar-EG")}
+                                  </div>
                                 </div>
                               </div>
                             </div>
                           ))
                         )}
                       </div>
-                      <div className="p-3 bg-gray-50 text-center">
-                        <Link
-                          href="/dashboard/alerts"
-                          className="text-indigo-600 font-medium hover:underline"
-                          onClick={() => setAlertsDropdownOpen(false)}
-                        >
-                          عرض كل التنبيهات →
-                        </Link>
-                      </div>
+                      
+                      <Link href="/dashboard" 
+                        onClick={() => setAlertsDropdownOpen(false)}
+                        className="block p-3 text-center bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition-colors">
+                        الانتقال للوحة التحكم ومتابعة الأعطال
+                      </Link>
                     </div>
-                  )} */}
+                  )}
+              
                 </div>
 
                 <div className="w-px h-10 bg-gray-300 mx-4" />
@@ -179,7 +222,7 @@ export default function Navbar() {
                   href="/Login"
                   className={`px-7 py-3 rounded-xl font-bold transform hover:scale-105 transition-all ${
                     pathname === "/Login"
-                      ? "bg-lime-600 shadow-xl scale-105 text-white" // الشكل لما يكون نشط
+                      ? "bg-lime-600 shadow-xl scale-105 text-white"
                       : "bg-linear-to-r from-indigo-500 to-purple-600 text-white hover:shadow-xl"
                   }`}
                 >
@@ -189,7 +232,7 @@ export default function Navbar() {
                   href="/Register"
                   className={`px-7 py-3 rounded-xl font-bold transform hover:scale-105 transition-all ${
                     pathname === "/Register"
-                      ? "bg-lime-600  shadow-xl scale-105 text-white" // الشكل لما يكون نشط
+                      ? "bg-lime-600  shadow-xl scale-105 text-white" 
                       : "bg-linear-to-r from-indigo-600 to-purple-700 text-white hover:shadow-xl"
                   }`}
                 >
@@ -252,7 +295,7 @@ export default function Navbar() {
                     )}
                   </button>
 
-                  {/* {alertsDropdownOpen && (
+                  {alertsDropdownOpen && (
                     <div className="mt-2 bg-gray-50 rounded-lg p-4 space-y-3">
                       {recentAlerts.length === 0 ? (
                         <p className="text-center text-gray-500">
@@ -267,7 +310,7 @@ export default function Navbar() {
                         ))
                       )}
                     </div>
-                  )} */}
+                  )}
                 </div>
 
                 <button
