@@ -352,18 +352,42 @@ const recs = getRecommendations(networkStats, prob, isAnomaly);
           <div className="lg:col-span-1 bg-slate-800/50 border border-slate-700/50 rounded-2xl p-4 backdrop-blur-sm space-y-5">
 
             {/* Tower selector */}
-            <div>
-              <p className="text-xs text-cyan-400 font-mono uppercase tracking-widest mb-3">◈ اختيار البرج</p>
-              <select
-                value={selectedTowerId}
-                onChange={e => { setSelectedTowerId(e.target.value); setResult(null); setHistory([]); setError(""); }}
-                className="w-full bg-slate-800/50 border border-slate-700/50 text-slate-100 rounded-xl px-4 py-3 font-mono text-sm focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all"
-              >
-                <option value="">اختر برجاً للفحص...</option>
-                {towers.map(t => <option key={t._id} value={t._id}>{t.TowerName}</option>)}
-              </select>
-            </div>
+  <div>
+  <p className="text-xs text-cyan-400 font-mono uppercase tracking-widest mb-3">◈ اختيار البرج</p>
+  
+  <div className="flex flex-col gap-3">
+    {/* القائمة المنسدلة */}
+    <select
+      value={selectedTowerId}
+      onChange={e => { 
+        setSelectedTowerId(e.target.value); 
+        setResult(null); 
+        setHistory([]); 
+        setError(""); 
+      }}
+      className="w-full bg-slate-800/50 border border-slate-700/50 text-slate-100 rounded-xl px-4 py-3 font-mono text-sm focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all"
+    >
+      <option value="">اختر برجاً للفحص...</option>
+      {towers.map(t => <option key={t._id} value={t._id}>{t.TowerName}</option>)}
+    </select>
 
+    {/* زر الفحص - يظهر في الموبايل فقط */}
+    <button 
+      onClick={() => {
+        if (!selectedTowerId) {
+            setError("يرجى اختيار برج أولاً");
+            return;
+        }
+     
+        triggerAnalysis([networkStats.latency, networkStats.packetLoss, networkStats.jitter, networkStats.throughput]);
+      }}
+      className="md:hidden w-full py-3 px-4 bg-linear-to-r from-cyan-600 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 text-white rounded-xl font-bold text-sm shadow-lg shadow-cyan-500/20 active:scale-95 transition-all flex items-center justify-center gap-2"
+    >
+      <Zap size={16} />
+      بدء فحص البرج الآن
+    </button>
+  </div>
+</div>
             {/* Loading bar */}
             {loading && (
               <div className="h-1 bg-slate-700/50 rounded-full overflow-hidden">
