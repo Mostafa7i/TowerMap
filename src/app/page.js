@@ -10,6 +10,7 @@ import TeamCard from "./components/TeamCard";
 import { Counter } from "./components/Counter";
 import { useAuth } from "./context/AuthContext";
 import Link from "next/link";
+import { toast } from "react-toastify";
 
 export default function Home() {
   const { isLoggedIn } = useAuth();
@@ -17,7 +18,7 @@ export default function Home() {
     {
       name: "أحمد سليمان",
       role: "Backend & Leader",
-      image:  "/pic/ahmed_seliman.jpeg"
+      image: "/pic/ahmed_seliman.jpeg"
     },
     {
       name: "أحمد محمد",
@@ -28,12 +29,12 @@ export default function Home() {
       name: "نسرين ابراهيم",
       role: "Front-End",
       image: "/pic/nesreen.jpeg"
-        },
+    },
     {
       name: "رحاب محسن",
       role: "Back-End",
       image: "/pic/rehab.jpeg"
-        },
+    },
 
     {
       name: "يمني ناصر",
@@ -88,11 +89,11 @@ export default function Home() {
             <div className="absolute bottom-1/4 left-1/2 w-96 h-96 bg-indigo-600 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-4000"></div>
           </div>
         </div>
-            <div className="inline-block -mt-20 md:-mt-32 mb-12">
-              <span className="bg-violet-500/20 border border-violet-500/30 text-violet-200 px-6 py-2 rounded-full text-sm font-medium backdrop-blur-sm">
-                نظام المراقبة الذكي الجديد 2025 ✨
-              </span>
-            </div>
+        <div className="inline-block -mt-20 md:-mt-32 mb-12">
+          <span className="bg-violet-500/20 border border-violet-500/30 text-violet-200 px-6 py-2 rounded-full text-sm font-medium backdrop-blur-sm">
+            نظام المراقبة الذكي الجديد 2025 ✨
+          </span>
+        </div>
 
         {/* Hero Content */}
         <motion.div
@@ -153,7 +154,7 @@ export default function Home() {
                 initial={{ opacity: 0, x: -40 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.9, delay: 0.9 }}
-                onClick={() => alert("تنبية: لازال قيد التطوير!")}
+                onClick={() => toast.info("🚧 العرض التوضيحي قيد التطوير، ترقبوا تحديثات قريباً!", { position: "top-center", autoClose: 4000 })}
                 className="px-8 py-5 cursor-pointer bg-white/10 backdrop-blur-md border-2 border-white/20 text-white rounded-2xl font-bold text-lg transition-all duration-300 hover:bg-white/20 hover:border-white/40 hover:scale-105"
               >
                 عرض توضيحي

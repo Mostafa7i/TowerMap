@@ -51,26 +51,33 @@ useEffect(() => {
 }, [user]);
 const recentAlerts = towers
   .filter((t) => {
+    const status = (t.status || '').toLowerCase();
     const latency = t.lastMeasurement?.latency || 0;
     const loss = t.lastMeasurement?.packetLoss || 0;
 
-    // 2. شروط العطل (عدل الأرقام دي حسب ما تحب)
-    const isLatencyBad = latency > 150; // لو البنج عالي
-    const isLossBad = loss > 5;        // لو فيه فقد بيانات
-    const isDangerStatus = t.status?.toLowerCase() === "danger";
+    const isLatencyBad = latency >= 80;
+    const isLossBad = loss >= 5;
+    const isBadStatus = ['danger', 'critical', 'warning'].includes(status);
 
-    // لو أي شرط من دول تحقق، البرج يظهر في التنبيهات فوراً
-    return isLatencyBad || isLossBad || isDangerStatus;
+    return isLatencyBad || isLossBad || isBadStatus;
   })
   .map(t => {
-    // تحديد لون الأيقونة بناءً على خطورة الرقم
-    const isCritical = (t.lastMeasurement?.latency > 300 || t.lastMeasurement?.packetLoss > 15);
+    const status = (t.status || '').toLowerCase();
+    const latency = t.lastMeasurement?.latency || 0;
+    const loss = t.lastMeasurement?.packetLoss || 0;
     
+    let alertType = 'warning';
+    if (status === 'danger' || latency >= 300 || loss >= 15) {
+      alertType = 'danger';
+    } else if (status === 'critical' || latency >= 150 || loss >= 10) {
+      alertType = 'critical';
+    }
+
     return {
       id: t._id,
       tower: t.TowerName,
-      type: isCritical ? "critical" : "warning",
-      detail: `Latency: ${t.lastMeasurement?.latency}ms | Loss: ${t.lastMeasurement?.packetLoss}%`,
+      type: alertType,
+      detail: `Latency: ${t.lastMeasurement?.latency ?? 'N/A'}ms | Loss: ${t.lastMeasurement?.packetLoss ?? 'N/A'}%`,
       time: t.updatedAt
     };
   });

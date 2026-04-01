@@ -12,20 +12,26 @@ const useMap       = dynamic(() => import("react-leaflet").then(m => m.useMap), 
 
 // ─── Status config ────────────────────────────────────────────────────────────
 const STATUS = {
+  safe:     { color: "#10b981", glow: "#10b98180", label: "طبيعي",   emoji: "🟢", bg: "#10b98115", border: "#10b98135" },
   normal:   { color: "#10b981", glow: "#10b98180", label: "طبيعي",   emoji: "🟢", bg: "#10b98115", border: "#10b98135" },
   warning:  { color: "#f59e0b", glow: "#f59e0b80", label: "تحذير",   emoji: "🟡", bg: "#f59e0b15", border: "#f59e0b35" },
-  critical: { color: "#ef4444", glow: "#ef444480", label: "حرج",     emoji: "🔴", bg: "#ef444415", border: "#ef444435" },
+  critical: { color: "#f97316", glow: "#f9731680", label: "حرج",     emoji: "🟠", bg: "#f9731615", border: "#f9731635" },
+  danger:   { color: "#ef4444", glow: "#ef444480", label: "خطر",     emoji: "🔴", bg: "#ef444415", border: "#ef444435" },
   unknown:  { color: "#64748b", glow: "#64748b80", label: "غير معروف",emoji: "⚫", bg: "#64748b15", border: "#64748b35" },
 };
 
 function getStatusKey(tower) {
-  if (tower.status && STATUS[tower.status]) return tower.status;
+  if (tower.status) {
+    const s = tower.status.toLowerCase();
+    if (STATUS[s]) return s;
+  }
   const lat = tower.lastMeasurement?.latency;
   const pl  = tower.lastMeasurement?.packetLoss;
   if (lat == null && pl == null) return "unknown";
-  if (lat > 200 || pl > 20) return "critical";
-  if (lat > 80  || pl > 5)  return "warning";
-  return "normal";
+  if (lat > 300 || pl > 15) return "danger";
+  if (lat >= 150 || pl >= 10) return "critical";
+  if (lat >= 80  || pl >= 5)  return "warning";
+  return "safe";
 }
 
 function getStatus(tower) {
@@ -72,21 +78,6 @@ const TILE_LAYERS = {
   sat:   { url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", label: "قمر صناعي" },
 };
 
-// ─── FlyTo helper component ───────────────────────────────────────────────────
-function MapFlyTo({ target }) {
-  // dynamically use the hook only client-side
-  const [mapRef, setMapRef] = useState(null);
-
-  // We can't use useMap hook directly in a dynamic import scenario easily,
-  // so we store it via a ref pattern via the parent.
-  useEffect(() => {
-    if (target && mapRef) {
-      mapRef.flyTo([target.location.lat, target.location.lng], 13, { duration: 1.2 });
-    }
-  }, [target, mapRef]);
-
-  return null;
-}
 
 // ─── Popup Card ───────────────────────────────────────────────────────────────
 function PopupCard({ tower, aiResult }) {
@@ -262,7 +253,7 @@ export default function TowerMap({ towers = [], towerAiResults = {} }) {
   );
 
   // Counts
-  const counts = { normal: 0, warning: 0, critical: 0, unknown: 0 };
+  const counts = { safe: 0, warning: 0, critical: 0, danger: 0, unknown: 0 };
   towers.forEach(t => {
     const k = getStatusKey(t);
     counts[k] = (counts[k] || 0) + 1;
@@ -315,7 +306,7 @@ export default function TowerMap({ towers = [], towerAiResults = {} }) {
           <div style={{ width: 1, height: 20, background: "#1e293b" }} />
 
           {/* Status filters */}
-          {["all", "normal", "warning", "critical"].map(f => (
+          {["all", "safe", "warning", "critical", "danger"].map(f => (
             <button key={f} onClick={() => setFilter(f)}
               className="map-panel-btn"
               style={{
@@ -326,7 +317,7 @@ export default function TowerMap({ towers = [], towerAiResults = {} }) {
                 fontSize: 11, fontFamily: "'Tajawal', sans-serif", fontWeight: 700,
                 transition: "all 0.2s",
               }}>
-              {f === "all" ? `الكل (${towers.length})` : f === "normal" ? `🟢 ${counts.normal}` : f === "warning" ? `🟡 ${counts.warning}` : `🔴 ${counts.critical}`}
+              {f === "all" ? `الكل (${towers.length})` : f === "safe" ? `🟢 ${counts.safe}` : f === "warning" ? `🟡 ${counts.warning}` : f === "critical" ? `🟠 ${counts.critical}` : `🔴 ${counts.danger}`}
             </button>
           ))}
 
@@ -461,11 +452,12 @@ export default function TowerMap({ towers = [], towerAiResults = {} }) {
         }}>
           {[
             { label: "إجمالي",   value: towers.length, color: "#38bdf8" },
-            { label: "🟢 طبيعي",  value: counts.normal,   color: "#10b981" },
+            { label: "🟢 طبيعي",  value: counts.safe,     color: "#10b981" },
             { label: "🟡 تحذير",  value: counts.warning,  color: "#f59e0b" },
-            { label: "🔴 حرج",    value: counts.critical, color: "#ef4444" },
+            { label: "🟠 حرج",    value: counts.critical, color: "#f97316" },
+            { label: "🔴 خطر",    value: counts.danger,   color: "#ef4444" },
           ].map((s, i) => (
-            <div key={i} style={{ padding: "8px 16px", textAlign: "center", borderRight: i < 3 ? "1px solid #1e293b" : "none" }}>
+            <div key={i} style={{ padding: "8px 16px", textAlign: "center", borderRight: i < 4 ? "1px solid #1e293b" : "none" }}>
               <p style={{ margin: 0, fontSize: 9, color: "#334155", fontFamily: "monospace", letterSpacing: 1 }}>{s.label}</p>
               <p style={{ margin: "2px 0 0", fontSize: 16, fontWeight: 800, color: s.color, fontFamily: "monospace" }}>{s.value}</p>
             </div>

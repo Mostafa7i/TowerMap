@@ -1,4 +1,3 @@
-// src/services/recommendationService.js
 
 /**
  * دالة تحليل بيانات البرج واستخراج التوصيات

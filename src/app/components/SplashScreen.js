@@ -1,12 +1,11 @@
 "use client";
 import { motion } from "framer-motion";
-import { Radio } from "lucide-react"; // أو Radio لو تفضلها
+import { Radio } from "lucide-react"; 
 
 export default function SplashScreen() {
   return (
     <div className="fixed inset-0 z-9999 flex items-center justify-center bg-gray-900 text-white">
       <div className="flex flex-col items-center">
-        {/* أيقونة البرج مع أنيميشن البث */}
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{

@@ -15,11 +15,9 @@ import {
   MapPin,
 } from "lucide-react";
 import React, { useState, useMemo } from "react";
-// import dynamic from "next/dynamic";
 import Analyze from "./Analyze";
 import { motion } from "framer-motion";
 import TowerMap from "./TowerMap";
-import { getRecommendations } from "./GetRecommendations";
 
 
 // ─── Status helpers ───────────────────────────────────────────────────────────

@@ -38,7 +38,6 @@ function getHealthScore(latency, packetLoss, jitter, throughput) {
 
 // ─── استنتاج الحالة من القيم الفعلية مباشرةً ──────────────────────────────────
 // هذه الدالة تحسب هل البرج خطر أم لا بناءً على بياناته الفعلية
-// بدون الاعتماد على towerAiResults فقط
 function deriveStatusFromStats(stats, aiResult) {
   const lat = parseFloat(stats?.latency) || 0;
   const pl  = parseFloat(stats?.packetLoss) || 0;

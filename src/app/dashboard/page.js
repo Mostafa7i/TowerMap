@@ -14,38 +14,39 @@ import SimulatorPage from "../components/Simulator";
 export default function DashboardPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { user, loading } = useAuth();
-  const [towers , setTowers] = useState([]); 
+  const [towers, setTowers] = useState([]);
   const [activeView, setActiveView] = useState("overview");
 
 
   const [stats, setStats] = useState({ critical: 0, warning: 0, normal: 0 });
   const fetchTowers = async () => {
-        try {
-            const response = await API.get("/towerMap/getTower");
-            const data = response.data.data;
-            setTowers(data);
+    try {
+      const response = await API.get("/towerMap/getTower");
+      const data = response.data.data;
+      setTowers(data);
 
-            const stats = {
-                critical: data.filter(t => t.status === 'Danger').length,
-                warning: 0, 
-                normal: data.filter(t => t.status === 'Safe').length,
-            };
-            setStats(stats);
+      const statusLower = (s) => (s || '').toLowerCase();
+      const stats = {
+        critical: data.filter(t => ['critical', 'danger'].includes(statusLower(t.status))).length,
+        warning: data.filter(t => statusLower(t.status) === 'warning').length,
+        normal: data.filter(t => statusLower(t.status) === 'safe').length,
+      };
+      setStats(stats);
 
-        } catch (error) {
-            console.error("Error fetching towers:", error);
-            console.log(error.message)
-        }
-    };
-    useEffect(() => {
-        fetchTowers(); // أول مرة
-        const interval = setInterval(fetchTowers, 10000); 
-        return () => clearInterval(interval);
-    }, []);
+    } catch (error) {
+      console.error("Error fetching towers:", error);
+      console.log(error.message)
+    }
+  };
+  useEffect(() => {
+    fetchTowers(); // أول مرة
+    const interval = setInterval(fetchTowers, 10000);
+    return () => clearInterval(interval);
+  }, []);
   // تحسين أداء التنقل بين الصفحات
   const renderActiveView = () => {
     switch (activeView) {
-      case "createTwoer":
+      case "createTower":
         return <CreateTower towers={towers} />;
       case "reports":
         return <Reports towers={towers} />;
@@ -55,7 +56,7 @@ export default function DashboardPage() {
         return <Settings towers={towers} />;
       case "overview":
       default:
-        return <Overview user={user} towers={towers}  stats={stats}/>;
+        return <Overview user={user} towers={towers} stats={stats} />;
     }
   };
 
@@ -75,20 +76,21 @@ export default function DashboardPage() {
       {/* Sidebar */}
       <Sidebar
         isOpen={sidebarOpen}
-        toggle={() => setSidebarOpen(!sidebarOpen)}
+        toggle={(val) => setSidebarOpen(typeof val === 'boolean' ? val : !sidebarOpen)}
         activeView={activeView}
         closeSidebar={() => setSidebarOpen(false)}
         setActiveView={setActiveView}
+        towers={towers}
       />
 
       <main className="flex-1 flex flex-col h-screen overflow-hidden bg-linear-to-br from-slate-950 via-slate-900 to-slate-950">
-        <header className="h-20 bg-linear-to-br from-slate-950 via-slate-900 to-slate-950 border-b border-gray-200 flex items-center justify-between px-8 shadow-sm">
+        <header className="h-20 bg-linear-to-br from-slate-950 via-slate-900 to-slate-950 border-b border-slate-800 flex items-center justify-between px-8 shadow-sm">
           <div className="flex items-center gap-3">
-            <div className="bg-blue-50 p-2 rounded-lg">
-              <LayoutDashboard className="text-blue-600 w-6 h-6" />
+            <div className="bg-indigo-500/10 border border-indigo-500/20 p-2 rounded-lg">
+              <LayoutDashboard className="text-indigo-400 w-6 h-6" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-gray-200">لوحة التحكم</h1>
+              <h1 className="text-xl font-bold text-gray-100">لوحة التحكم</h1>
               <p className="text-xs text-gray-400">
                 مراقبة أبراج الاتصالات - تحديث حي
               </p>
