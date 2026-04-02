@@ -1,6 +1,7 @@
 //dashboard
 "use client";
 import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { User2, LayoutDashboard, Loader2 } from "lucide-react";
 import { useAuth } from "@/app/context/AuthContext";
 import Sidebar from "@/app/components/Sidebar";
@@ -13,6 +14,7 @@ import SimulatorPage from "../components/Simulator";
 
 export default function DashboardPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const router = useRouter();
   const { user, loading } = useAuth();
   const [towers, setTowers] = useState([]);
   const [activeView, setActiveView] = useState("overview");
@@ -60,12 +62,18 @@ export default function DashboardPage() {
     }
   };
 
-  if (loading) {
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push("/Login");
+    }
+  }, [loading, user, router]);
+
+  if (loading || !user) {
     return (
       <div className="flex h-screen w-full items-center justify-center bg-gray-50">
         <Loader2 className="h-10 w-10 animate-spin text-blue-600" />
         <span className="mr-3 text-lg font-medium text-gray-600">
-          جاري تحميل البيانات...
+          {loading ? "جاري تحميل البيانات..." : "يتم تحويلك لصفحة تسجيل الدخول..."}
         </span>
       </div>
     );

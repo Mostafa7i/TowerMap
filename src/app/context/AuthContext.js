@@ -19,6 +19,7 @@ export const AuthContext = ({ children }) => {
       setLoggedIn(true)
     } catch (err) {
       setUser(null);
+      setLoggedIn(false);
     } finally {
       setLoading(false);
     }
@@ -28,18 +29,18 @@ export const AuthContext = ({ children }) => {
   }, []);
 
 
-const logOut = async () =>{
-  try {
-    await API.post("/auth/logout")
-    NotifiyInfo("LogOut successfully!")
-    setLoggedIn(false)
-    router.push("/Login")
-  } catch (error) {
-      NotifiyErorr(error)
-  }finally{
-    setUser(null)
-  }
-}
+  const logOut = async () => {
+    try {
+      await API.post("/auth/logout");
+      NotifiyInfo("تم تسجيل الخروج بنجاح!");
+    } catch (error) {
+      console.error("Logout error:", error);
+    } finally {
+      setLoggedIn(false);
+      setUser(null);
+      router.replace("/Login");
+    }
+  };
   return (
     <AuthProvider.Provider
       value={{ user, setUser, loading, logOut, getMe, isLoggedIn, setLoggedIn }}
