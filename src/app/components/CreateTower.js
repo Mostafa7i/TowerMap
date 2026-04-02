@@ -93,6 +93,7 @@ export default function CreateTower() {
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [ipError, setIpError] = useState("");
+  const [isCheckingIp, setIsCheckingIp] = useState(false);
   const router = useRouter();
 
   const handleChange = (e) => {
@@ -118,9 +119,36 @@ export default function CreateTower() {
 
   const canNext = [
     formData.TowerName && formData.vendor,
-    formData.ip_address && !ipError,
+    formData.ip_address && !ipError && !isCheckingIp,
     formData.lat && formData.lng,
   ];
+
+  const handleNext = async () => {
+    if (step === 1) {
+      if (!isValidIP(formData.ip_address)) {
+        setIpError("صيغة IP غير صحيحة");
+        return;
+      }
+      setIsCheckingIp(true);
+      try {
+        const res = await API.post("/towerMap/checkIp", { ip_address: formData.ip_address });
+        if (res.data.exists) {
+          setIpError("هذا الـ IP مسجل بالفعل لبرج آخر!");
+          setIsCheckingIp(false);
+          return;
+        }
+      } catch (error) {
+        let msg = "تعذر التحقق من الـ IP بالسيرفر";
+        if (error?.response) msg = error.response.data?.message || msg;
+        else if (error?.message) msg = error.message;
+        NotifiyErorr(msg);
+        setIsCheckingIp(false);
+        return; // Don't proceed if there's a server error
+      }
+      setIsCheckingIp(false);
+    }
+    setStep(s => s + 1);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -179,12 +207,12 @@ export default function CreateTower() {
   ];
 
   const TOWERS = [
-    { value: "Cairo Tower", label: "برج القاهرة", icon: "🗼" },
-    { value: "Geza Tower", label: "برج الجيزة", icon: "🏗" },
-    { value: "Mansoura Tower", label: "برج المنصورة", icon: "📡" },
-    { value: "Tanta Tower", label: "برج طنطا", icon: "📶" },
-    { value: "Alexandria Tower", label: "برج الإسكندرية", icon: "🏛" },
-    { value: "Aswan Tower", label: "برج أسوان", icon: "☀️" },
+    { value: "Cairo Tower", label: "برج القاهرة", icon: "🗼", lat: "30.0444", lng: "31.2357" },
+    { value: "Geza Tower", label: "برج الجيزة", icon: "🏗", lat: "30.0131", lng: "31.2089" },
+    { value: "Mansoura Tower", label: "برج المنصورة", icon: "📡", lat: "31.0409", lng: "31.3785" },
+    { value: "Tanta Tower", label: "برج طنطا", icon: "📶", lat: "30.7865", lng: "31.0004" },
+    { value: "Alexandria Tower", label: "برج الإسكندرية", icon: "🏛", lat: "31.2001", lng: "29.9187" },
+    { value: "Aswan Tower", label: "برج أسوان", icon: "☀️", lat: "24.0889", lng: "32.8998" },
   ];
 
   return (
@@ -234,7 +262,7 @@ export default function CreateTower() {
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
                       {TOWERS.map((t) => (
                         <button key={t.value} type="button"
-                          onClick={() => setFormData((p) => ({ ...p, TowerName: t.value }))}
+                          onClick={() => setFormData((p) => ({ ...p, TowerName: t.value, lat: t.lat, lng: t.lng }))}
                           className="ct-option-btn"
                           style={{
                             background: formData.TowerName === t.value ? "rgba(14,165,233,0.15)" : "#0a1628",
@@ -333,14 +361,21 @@ export default function CreateTower() {
                 <div className="fade-in" style={{ display: "flex", flexDirection: "column", gap: 24 }}>
 
                   {/* Auto-detect button */}
-                  <button type="button" onClick={detectLocation}
-                    style={{ background: "rgba(99,102,241,0.1)", border: "1px solid rgba(99,102,241,0.3)", borderRadius: 10, padding: "12px 20px", cursor: "pointer", display: "flex", alignItems: "center", gap: 10, color: "#a78bfa", fontFamily: "monospace", fontSize: 12, transition: "all 0.2s" }}
-                    onMouseEnter={(e) => e.currentTarget.style.background = "rgba(99,102,241,0.2)"}
-                    onMouseLeave={(e) => e.currentTarget.style.background = "rgba(99,102,241,0.1)"}>
-                    <Crosshair size={16} />
-                    تحديد موقعي الحالي تلقائياً
-                    <span style={{ fontSize: 10, color: "#6366f140", border: "1px solid #6366f140", borderRadius: 4, padding: "2px 6px" }}>GPS</span>
-                  </button>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                    <button type="button" onClick={detectLocation}
+                      style={{ background: "rgba(99,102,241,0.1)", border: "1px solid rgba(99,102,241,0.3)", borderRadius: 10, padding: "12px 20px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 10, color: "#a78bfa", fontFamily: "monospace", fontSize: 13, fontWeight: "bold", transition: "all 0.2s" }}
+                      onMouseEnter={(e) => e.currentTarget.style.background = "rgba(99,102,241,0.2)"}
+                      onMouseLeave={(e) => e.currentTarget.style.background = "rgba(99,102,241,0.1)"}>
+                      <Crosshair size={16} />
+                      تحديد موقعي الحالي تلقائياً
+                      <span style={{ fontSize: 10, color: "#6366f140", border: "1px solid #6366f140", borderRadius: 4, padding: "2px 6px", marginLeft: "auto" }}>GPS</span>
+                    </button>
+                    {formData.lat && formData.lng && (
+                      <p style={{ fontSize: 11, color: "#fbbf24", fontFamily: "'Tajawal', sans-serif", margin: 0, textAlign: "justify", lineHeight: 1.6 }}>
+                        ⚠️ <strong style={{ fontWeight: 800 }}>تنبيه:</strong> لقد تم تجهيز الإحداثيات الموضحة بالأسفل <strong style={{ color: "#38bdf8" }}>تلقائياً</strong> لتطابق الموقع الجغرافي للبرج الذي اخترته (مثال: أسوان). لا تضغط على الزر أعلاه إلا إذا كنت تقف فعلياً بجوار البرج الآن لتجنب تسجيل الخريطة بشكل خاطئ.
+                      </p>
+                    )}
+                  </div>
 
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
                     <FloatField label="خط العرض" icon="📍" hint="Latitude (-90 → 90)">
@@ -409,11 +444,18 @@ export default function CreateTower() {
                 )}
 
                 {step < 2 ? (
-                  <button type="button" onClick={() => setStep(s => s + 1)}
-                    disabled={!canNext[step]}
+                  <button type="button" onClick={handleNext}
+                    disabled={!canNext[step] || isCheckingIp}
                     className="ct-submit-btn"
-                    style={{ flex: 2, opacity: !canNext[step] ? 0.3 : 1, cursor: !canNext[step] ? "not-allowed" : "pointer" }}>
-                    التالي →
+                    style={{ flex: 2, opacity: !canNext[step] || isCheckingIp ? 0.3 : 1, cursor: !canNext[step] || isCheckingIp ? "not-allowed" : "pointer" }}>
+                    {isCheckingIp ? (
+                      <span style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10 }}>
+                        <Loader2 size={18} style={{ animation: "spin 0.8s linear infinite" }} />
+                        جاري التحقق...
+                      </span>
+                    ) : (
+                      "التالي →"
+                    )}
                   </button>
                 ) : (
                   <button type="submit" disabled={loading || !canNext[2]}

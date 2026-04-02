@@ -5,19 +5,22 @@ import dynamic from "next/dynamic";
 import "leaflet/dist/leaflet.css";
 
 const MapContainer = dynamic(() => import("react-leaflet").then(m => m.MapContainer), { ssr: false });
-const TileLayer    = dynamic(() => import("react-leaflet").then(m => m.TileLayer),    { ssr: false });
-const Marker       = dynamic(() => import("react-leaflet").then(m => m.Marker),       { ssr: false });
-const Popup        = dynamic(() => import("react-leaflet").then(m => m.Popup),        { ssr: false });
-const useMap       = dynamic(() => import("react-leaflet").then(m => m.useMap),       { ssr: false });
+const TileLayer = dynamic(() => import("react-leaflet").then(m => m.TileLayer), { ssr: false });
+const Marker = dynamic(() => import("react-leaflet").then(m => m.Marker), { ssr: false });
+const Popup = dynamic(() => import("react-leaflet").then(m => m.Popup), { ssr: false });
+const Circle = dynamic(() => import("react-leaflet").then(m => m.Circle), { ssr: false });
+const useMap = dynamic(() => import("react-leaflet").then(m => m.useMap), { ssr: false });
+
+import { Radar, RadarChart, PolarGrid, PolarAngleAxis, ResponsiveContainer } from "recharts";
 
 // ─── Status config ────────────────────────────────────────────────────────────
 const STATUS = {
-  safe:     { color: "#10b981", glow: "#10b98180", label: "طبيعي",   emoji: "🟢", bg: "#10b98115", border: "#10b98135" },
-  normal:   { color: "#10b981", glow: "#10b98180", label: "طبيعي",   emoji: "🟢", bg: "#10b98115", border: "#10b98135" },
-  warning:  { color: "#f59e0b", glow: "#f59e0b80", label: "تحذير",   emoji: "🟡", bg: "#f59e0b15", border: "#f59e0b35" },
-  critical: { color: "#f97316", glow: "#f9731680", label: "حرج",     emoji: "🟠", bg: "#f9731615", border: "#f9731635" },
-  danger:   { color: "#ef4444", glow: "#ef444480", label: "خطر",     emoji: "🔴", bg: "#ef444415", border: "#ef444435" },
-  unknown:  { color: "#64748b", glow: "#64748b80", label: "غير معروف",emoji: "⚫", bg: "#64748b15", border: "#64748b35" },
+  safe: { color: "#10b981", glow: "#10b98180", label: "طبيعي", emoji: "🟢", bg: "#10b98115", border: "#10b98135" },
+  normal: { color: "#10b981", glow: "#10b98180", label: "طبيعي", emoji: "🟢", bg: "#10b98115", border: "#10b98135" },
+  warning: { color: "#f59e0b", glow: "#f59e0b80", label: "تحذير", emoji: "🟡", bg: "#f59e0b15", border: "#f59e0b35" },
+  critical: { color: "#f97316", glow: "#f9731680", label: "حرج", emoji: "🟠", bg: "#f9731615", border: "#f9731635" },
+  danger: { color: "#ef4444", glow: "#ef444480", label: "خطر", emoji: "🔴", bg: "#ef444415", border: "#ef444435" },
+  unknown: { color: "#64748b", glow: "#64748b80", label: "غير معروف", emoji: "⚫", bg: "#64748b15", border: "#64748b35" },
 };
 
 function getStatusKey(tower) {
@@ -26,11 +29,11 @@ function getStatusKey(tower) {
     if (STATUS[s]) return s;
   }
   const lat = tower.lastMeasurement?.latency;
-  const pl  = tower.lastMeasurement?.packetLoss;
+  const pl = tower.lastMeasurement?.packetLoss;
   if (lat == null && pl == null) return "unknown";
   if (lat > 300 || pl > 15) return "danger";
   if (lat >= 150 || pl >= 10) return "critical";
-  if (lat >= 80  || pl >= 5)  return "warning";
+  if (lat >= 80 || pl >= 5) return "warning";
   return "safe";
 }
 
@@ -41,7 +44,7 @@ function getStatus(tower) {
 function getHealthScore(m) {
   if (!m) return null;
   const latScore = Math.max(0, 100 - (m.latency / 2));
-  const plScore  = Math.max(0, 100 - m.packetLoss * 10);
+  const plScore = Math.max(0, 100 - m.packetLoss * 10);
   const jitScore = Math.max(0, 100 - m.jitter * 5);
   const thrScore = Math.min(100, (m.throughput / 100) * 100);
   return ((latScore + plScore + jitScore + thrScore) / 4).toFixed(0);
@@ -73,25 +76,25 @@ function buildMarkerHTML(color, glow, isCritical, isSelected) {
 
 // ─── Map style toggle (dark tiles) ───────────────────────────────────────────
 const TILE_LAYERS = {
-  dark:  { url: "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",   label: "داكن" },
-  light: { url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",              label: "فاتح" },
-  sat:   { url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", label: "قمر صناعي" },
+  dark: { url: "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", label: "داكن" },
+  light: { url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", label: "فاتح" },
+  sat: { url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", label: "قمر صناعي" },
 };
 
 
 // ─── Popup Card ───────────────────────────────────────────────────────────────
 function PopupCard({ tower, aiResult }) {
-  const s   = getStatus(tower);
-  const m   = tower.lastMeasurement;
+  const s = getStatus(tower);
+  const m = tower.lastMeasurement;
   const health = getHealthScore(m);
   const prob = aiResult ? parseFloat(aiResult.probability) : null;
   const riskColor = prob == null ? "#64748b" : prob >= 75 ? "#ef4444" : prob >= 50 ? "#f97316" : prob >= 25 ? "#f59e0b" : "#10b981";
 
   const rows = [
-    { label: "Latency",    value: m?.latency    != null ? `${m.latency} ms`    : "—", color: "#38bdf8" },
-    { label: "Packet Loss",value: m?.packetLoss != null ? `${m.packetLoss}%`   : "—", color: "#f87171" },
-    { label: "Jitter",     value: m?.jitter     != null ? `${m.jitter} ms`     : "—", color: "#a78bfa" },
-    { label: "Throughput", value: m?.throughput != null ? `${m.throughput} Mbps`: "—", color: "#34d399" },
+    { label: "Latency", value: m?.latency != null ? `${m.latency} ms` : "—", color: "#38bdf8" },
+    { label: "Packet Loss", value: m?.packetLoss != null ? `${m.packetLoss}%` : "—", color: "#f87171" },
+    { label: "Jitter", value: m?.jitter != null ? `${m.jitter} ms` : "—", color: "#a78bfa" },
+    { label: "Throughput", value: m?.throughput != null ? `${m.throughput} Mbps` : "—", color: "#34d399" },
   ];
 
   return (
@@ -147,8 +150,8 @@ function PopupCard({ tower, aiResult }) {
           </div>
         )}
         {prob != null && (
-          <div style={{ flex: 1, background: "#0f172a", border: "1px solid #1e293b", borderRadius: 8, padding: "7px 10px" }}>
-            <p style={{ margin: 0, fontSize: 9, color: "#475569", fontFamily: "monospace", marginBottom: 4 }}>AI Risk</p>
+          <div style={{ flex: 1, background: "#0f172a", border: "1px solid #1e293b", borderRadius: 8, padding: "7px 10px", display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+            <p style={{ margin: 0, fontSize: 9, color: "#475569", fontFamily: "monospace", marginBottom: 4 }}>AI Certainty</p>
             <div style={{ height: 4, background: "#1e293b", borderRadius: 2, overflow: "hidden" }}>
               <div style={{ height: "100%", width: `${prob}%`, borderRadius: 2, background: riskColor, boxShadow: `0 0 6px ${riskColor}` }} />
             </div>
@@ -156,6 +159,35 @@ function PopupCard({ tower, aiResult }) {
           </div>
         )}
       </div>
+
+      {/* XAI Radar Chart */}
+      {prob != null && prob > 10 && m != null && (
+        <div style={{ height: 130, width: "100%", marginBottom: 10, background: "#0f172a", borderRadius: 8, border: "1px solid #1e293b", padding: "4px 0" }}>
+          <p style={{ margin: "4px 0 0", fontSize: 9, color: "#94a3b8", fontFamily: "monospace", textAlign: "center", textTransform: 'uppercase', letterSpacing: 1 }}>AI Risk Breakdown</p>
+          <ResponsiveContainer width="100%" height="90%">
+            <RadarChart cx="50%" cy="50%" outerRadius="60%" data={[
+              { subject: 'Latency', v: Math.min(100, (m.latency || 0) / 2), fullMark: 100 },
+              { subject: 'Loss', v: Math.min(100, (m.packetLoss || 0) * 8), fullMark: 100 },
+              { subject: 'Jitter', v: Math.min(100, (m.jitter || 0) * 15), fullMark: 100 },
+              { subject: 'Traffic', v: Math.max(0, 100 - ((m.throughput || 0) / 2)), fullMark: 100 },
+            ]}>
+              <PolarGrid stroke="#334155" />
+              <PolarAngleAxis dataKey="subject" tick={{ fill: '#94a3b8', fontSize: 8, fontFamily: "monospace" }} />
+              <Radar name="Risk" dataKey="v" stroke={riskColor} fill={riskColor} fillOpacity={0.3} />
+            </RadarChart>
+          </ResponsiveContainer>
+        </div>
+      )}
+
+      {/* Auto-Mitigation Action */}
+      {prob >= 75 && (
+        <button style={{ width: "100%", background: "rgba(239, 68, 68, 0.15)", border: "1px solid #ef444450", borderRadius: 8, padding: "8px", color: "#fca5a5", fontSize: 11, fontWeight: 700, cursor: "pointer", marginBottom: 10, transition: "all 0.3s", display: "flex", justifyContent: "center", alignItems: "center", gap: 6, fontFamily: "monospace" }}
+          onMouseEnter={(e) => e.currentTarget.style.background = "rgba(239, 68, 68, 0.3)"}
+          onMouseLeave={(e) => e.currentTarget.style.background = "rgba(239, 68, 68, 0.15)"}
+          onClick={(e) => { e.stopPropagation(); alert("⚡ Command Sent: Traffic Rerouting Initialized."); }}>
+          <span style={{ animation: "pulse 1s infinite" }}>⚡</span> AUTO-HEAL: REROUTE
+        </button>
+      )}
 
       {/* Footer */}
       <div style={{ borderTop: "1px solid #1e293b", paddingTop: 8, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -197,12 +229,12 @@ function MapLegend({ counts }) {
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 export default function TowerMap({ towers = [], towerAiResults = {} }) {
-  const [L, setL]               = useState(null);
-  const [tileKey, setTileKey]   = useState("dark");
-  const [filter, setFilter]     = useState("all");
-  const [search, setSearch]     = useState("");
+  const [L, setL] = useState(null);
+  const [tileKey, setTileKey] = useState("dark");
+  const [filter, setFilter] = useState("all");
+  const [search, setSearch] = useState("");
   const [selected, setSelected] = useState(null);
-  const [mapRef, setMapRef]     = useState(null);
+  const [mapRef, setMapRef] = useState(null);
   const [showPanel, setShowPanel] = useState(true);
 
   // ── Leaflet init ──
@@ -214,8 +246,8 @@ export default function TowerMap({ towers = [], towerAiResults = {} }) {
       delete Lref.Icon.Default.prototype._getIconUrl;
       Lref.Icon.Default.mergeOptions({
         iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
-        iconUrl:       "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-        shadowUrl:     "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+        iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
+        shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
       });
       setL(Lref);
     });
@@ -233,12 +265,12 @@ export default function TowerMap({ towers = [], towerAiResults = {} }) {
     if (!L) return null;
     const s = getStatus(tower);
     const isCrit = s === STATUS.critical;
-    const isSel  = selected?._id === tower._id;
+    const isSel = selected?._id === tower._id;
     return L.divIcon({
       className: "",
       html: buildMarkerHTML(s.color, s.glow, isCrit, isSel),
-      iconSize:    [36, 36],
-      iconAnchor:  [18, 18],
+      iconSize: [36, 36],
+      iconAnchor: [18, 18],
       popupAnchor: [0, -22],
     });
   }, [L, selected]);
@@ -272,10 +304,13 @@ export default function TowerMap({ towers = [], towerAiResults = {} }) {
         @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;800&family=JetBrains+Mono:wght@400;700&display=swap');
         @keyframes markerPulse { 0%{transform:scale(1);opacity:0.6} 70%{transform:scale(2.2);opacity:0} 100%{transform:scale(1);opacity:0} }
         @keyframes spin { to{transform:rotate(360deg)} }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+        @keyframes pulseAura { 0%{opacity:0.6} 100%{opacity:1} }
         .leaflet-popup-content-wrapper { background:transparent!important; border:none!important; box-shadow:none!important; padding:0!important; }
         .leaflet-popup-content { margin:0!important; }
         .leaflet-popup-tip-container { display:none!important; }
         .leaflet-container { background:#020c1b; }
+        .leaflet-interactive { animation: pulseAura 2s infinite alternate; }
         .map-panel-btn:hover { background: rgba(14,165,233,0.15)!important; }
       `}</style>
 
@@ -425,18 +460,31 @@ export default function TowerMap({ towers = [], towerAiResults = {} }) {
             attribution='&copy; <a href="https://openstreetmap.org">OpenStreetMap</a>'
           />
 
-          {visible.map(tower => (
-            <Marker
-              key={tower._id}
-              position={[tower.location.lat, tower.location.lng]}
-              icon={getIcon(tower)}
-              eventHandlers={{ click: () => setSelected(tower) }}
-            >
-              <Popup>
-                <PopupCard tower={tower} aiResult={towerAiResults?.[tower._id]} />
-              </Popup>
-            </Marker>
-          ))}
+          {visible.map(tower => {
+            const s = getStatus(tower);
+            const isDangerous = s === STATUS.critical || s === STATUS.danger;
+
+            return (
+              <div key={tower._id}>
+                {isDangerous && (
+                  <Circle
+                    center={[tower.location.lat, tower.location.lng]}
+                    radius={s === STATUS.danger ? 18000 : 10000}
+                    pathOptions={{ color: s.color, fillColor: s.color, fillOpacity: 0.15, weight: 1.5, dashArray: "4 4" }}
+                  />
+                )}
+                <Marker
+                  position={[tower.location.lat, tower.location.lng]}
+                  icon={getIcon(tower)}
+                  eventHandlers={{ click: () => setSelected(tower) }}
+                >
+                  <Popup>
+                    <PopupCard tower={tower} aiResult={towerAiResults?.[tower._id]} />
+                  </Popup>
+                </Marker>
+              </div>
+            );
+          })}
         </MapContainer>
 
         {/* ── Legend ── */}
@@ -451,11 +499,11 @@ export default function TowerMap({ towers = [], towerAiResults = {} }) {
           boxShadow: "0 4px 24px rgba(0,0,0,0.5)",
         }}>
           {[
-            { label: "إجمالي",   value: towers.length, color: "#38bdf8" },
-            { label: "🟢 طبيعي",  value: counts.safe,     color: "#10b981" },
-            { label: "🟡 تحذير",  value: counts.warning,  color: "#f59e0b" },
-            { label: "🟠 حرج",    value: counts.critical, color: "#f97316" },
-            { label: "🔴 خطر",    value: counts.danger,   color: "#ef4444" },
+            { label: "إجمالي", value: towers.length, color: "#38bdf8" },
+            { label: "🟢 طبيعي", value: counts.safe, color: "#10b981" },
+            { label: "🟡 تحذير", value: counts.warning, color: "#f59e0b" },
+            { label: "🟠 حرج", value: counts.critical, color: "#f97316" },
+            { label: "🔴 خطر", value: counts.danger, color: "#ef4444" },
           ].map((s, i) => (
             <div key={i} style={{ padding: "8px 16px", textAlign: "center", borderRight: i < 4 ? "1px solid #1e293b" : "none" }}>
               <p style={{ margin: 0, fontSize: 9, color: "#334155", fontFamily: "monospace", letterSpacing: 1 }}>{s.label}</p>
