@@ -14,6 +14,7 @@ import {
   Radio,
   LogOut,
   Clock,
+  Users,
 } from "lucide-react";
 import { useState, useMemo } from "react";
 import { useAuth } from "@/app/context/AuthContext";
@@ -35,7 +36,7 @@ const NavLink = ({ icon, children, onClick, isActive }) => (
   </a>
 );
 
-export default function Sidebar({ activeView, setActiveView, toggle, isOpen, closeSidebar, towers = [] }) {
+export default function Sidebar({ activeView, setActiveView, toggle, isOpen, closeSidebar, towers = [], isAdmin = false }) {
   const [alertsVisible, setAlertsVisible] = useState(true);
   const { logOut, user } = useAuth();
 
@@ -158,6 +159,16 @@ export default function Sidebar({ activeView, setActiveView, toggle, isOpen, clo
           >
             الإعدادات
           </NavLink>
+          {/* Admin only */}
+          {isAdmin && (
+            <NavLink
+              icon={<Users className="w-5 h-5" />}
+              onClick={() => handleNavigation("adminUsers")}
+              isActive={activeView === "adminUsers"}
+            >
+              إدارة المستخدمين
+            </NavLink>
+          )}
         </nav>
 
         {/* Recent Alerts */}

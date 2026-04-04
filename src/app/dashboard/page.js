@@ -9,8 +9,13 @@ import Reports from "@/app/components/Reports";
 import Settings from "@/app/components/Settings";
 import Overview from "@/app/components/Overview";
 import CreateTower from "@/app/components/CreateTower";
+import AdminUsers from "@/app/components/AdminUsers";
+import UserDashboard from "@/app/components/UserDashboard";
+import PendingVerification from "@/app/components/PendingVerification";
 import API from "../services/api";
 import SimulatorPage from "../components/Simulator";
+
+const NORMAL_USER_SECTION = "مستخدم عادي";
 
 export default function DashboardPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -19,8 +24,8 @@ export default function DashboardPage() {
   const [towers, setTowers] = useState([]);
   const [activeView, setActiveView] = useState("overview");
 
-
   const [stats, setStats] = useState({ critical: 0, warning: 0, normal: 0 });
+
   const fetchTowers = async () => {
     try {
       const response = await API.get("/towerMap/getTower");
@@ -34,33 +39,19 @@ export default function DashboardPage() {
         normal: data.filter(t => statusLower(t.status) === 'safe').length,
       };
       setStats(stats);
-
     } catch (error) {
       console.error("Error fetching towers:", error);
-      console.log(error.message)
     }
   };
+
   useEffect(() => {
-    fetchTowers(); // أول مرة
-    const interval = setInterval(fetchTowers, 10000);
-    return () => clearInterval(interval);
-  }, []);
-  // تحسين أداء التنقل بين الصفحات
-  const renderActiveView = () => {
-    switch (activeView) {
-      case "createTower":
-        return <CreateTower towers={towers} />;
-      case "reports":
-        return <Reports towers={towers} />;
-      case "simulator":
-        return <SimulatorPage towers={towers} />;
-      case "settings":
-        return <Settings towers={towers} />;
-      case "overview":
-      default:
-        return <Overview user={user} towers={towers} stats={stats} />;
+    // فقط المستخدمين غير العاديين يحتاجون بيانات الأبراج
+    if (user && user.section !== NORMAL_USER_SECTION) {
+      fetchTowers();
+      const interval = setInterval(fetchTowers, 10000);
+      return () => clearInterval(interval);
     }
-  };
+  }, [user]);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -68,6 +59,7 @@ export default function DashboardPage() {
     }
   }, [loading, user, router]);
 
+  // ── شاشة التحميل ──
   if (loading || !user) {
     return (
       <div className="flex h-screen w-full items-center justify-center bg-gray-50">
@@ -79,6 +71,35 @@ export default function DashboardPage() {
     );
   }
 
+  // ── مستخدم عادي → لوحة الشكاوى مباشرة ──
+  if (user.section === NORMAL_USER_SECTION) {
+    return <UserDashboard />;
+  }
+
+  // ── دور غير عادي لم يتم التحقق منه أو تم رفضه → شاشة الانتظار / الرفض ──
+  if (!user.isAdmin && user.verificationStatus !== "approved") {
+    return <PendingVerification />;
+  }
+
+  // ─── لوحة تحكم عادية (مهندسون + أدمن) ───
+  const renderActiveView = () => {
+    switch (activeView) {
+      case "createTower":
+        return <CreateTower towers={towers} />;
+      case "reports":
+        return <Reports towers={towers} />;
+      case "simulator":
+        return <SimulatorPage towers={towers} />;
+      case "settings":
+        return <Settings towers={towers} />;
+      case "adminUsers":
+        return <AdminUsers />;
+      case "overview":
+      default:
+        return <Overview user={user} towers={towers} stats={stats} />;
+    }
+  };
+
   return (
     <div className="flex min-h-screen bg-[#f8f9fa]" dir="rtl">
       {/* Sidebar */}
@@ -89,6 +110,7 @@ export default function DashboardPage() {
         closeSidebar={() => setSidebarOpen(false)}
         setActiveView={setActiveView}
         towers={towers}
+        isAdmin={user?.isAdmin}
       />
 
       <main className="flex-1 flex flex-col h-screen overflow-hidden bg-linear-to-br from-slate-950 via-slate-900 to-slate-950">
@@ -111,7 +133,7 @@ export default function DashboardPage() {
                 {user?.fullName || "مستخدم"}
               </p>
               <p className="text-xs text-blue-600 font-medium bg-blue-50 px-2 py-0.5 rounded-full inline-block">
-                {user?.section || "بدون تخصص"}
+                {user?.isAdmin ? "مسؤول النظام" : user?.section || "بدون تخصص"}
               </p>
             </div>
             <div className="relative">
@@ -126,7 +148,6 @@ export default function DashboardPage() {
         {/* Content Area */}
         <div className="flex-1 overflow-y-auto p-6 md:p-10">
           <div className="max-w-7xl mx-auto">
-            {/* Dynamic View Content */}
             <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
               {renderActiveView()}
             </div>
