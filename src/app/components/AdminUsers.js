@@ -19,6 +19,7 @@ import {
   Mail,
   Building2,
   CalendarDays,
+  Trash2,
 } from "lucide-react";
 import API from "@/app/services/api";
 import { NotifiySuccess, NotifiyErorr } from "@/app/components/Notify";
@@ -29,7 +30,7 @@ const SECTION_COLORS = {
   "مستخدم عادي": "text-emerald-400 bg-emerald-500/10 border-emerald-500/20",
 };
 
-function UserCard({ u, onVerify, loading }) {
+function UserCard({ u, onVerify, onDelete, loading }) {
   const sectionClass =
     SECTION_COLORS[u.section] || "text-slate-400 bg-slate-500/10 border-slate-500/20";
 
@@ -55,8 +56,8 @@ function UserCard({ u, onVerify, loading }) {
           </div>
         </div>
 
-        {/* Status Badge */}
-        <div className="shrink-0">
+        {/* Status Badge & Delete */}
+        <div className="shrink-0 flex items-center gap-2">
           {u.section === "مستخدم عادي" ? (
             <span className="flex items-center gap-1 text-xs text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full font-semibold">
               <CheckCircle2 className="w-3.5 h-3.5" />
@@ -78,6 +79,15 @@ function UserCard({ u, onVerify, loading }) {
               قيد الانتظار
             </span>
           )}
+
+          <button
+            onClick={() => onDelete(u._id)}
+            disabled={loading === u._id}
+            className="p-1.5 text-red-500/70 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
+            title="حذف المستخدم"
+          >
+            <Trash2 className="w-4 h-4 text-red-500" />
+          </button>
         </div>
       </div>
 
@@ -159,11 +169,14 @@ function UserCard({ u, onVerify, loading }) {
 
 export default function AdminUsers() {
   const [tab, setTab] = useState("pending"); // "pending" | "all" | "complaints"
+  const [complaintFilter, setComplaintFilter] = useState("all");
   const [users, setUsers] = useState([]);
   const [allcomplaints, setAllComplaints] = useState([]);
   const [loading, setLoading] = useState(false);
   const [actionLoading, setActionLoading] = useState(null);
   const [search, setSearch] = useState("");
+
+  const unreadCount = allcomplaints.filter((c) => !c.isReadByAdmin).length;
 
   const fetchPending = async () => {
     setLoading(true);
@@ -199,10 +212,39 @@ export default function AdminUsers() {
   };
 
   useEffect(() => {
+    // نجلب الشكاوى في الخلفية دائمًا لمعرفة عدد الغير مقروء،
+    // حتى لو التاب مش مفتوح
+    fetchComplaints();
+  }, []);
+
+  useEffect(() => {
     if (tab === "pending") fetchPending();
     else if (tab === "all") fetchAll();
-    else if (tab === "complaints") fetchComplaints();
-  }, [tab]);
+    else if (tab === "complaints") {
+      fetchComplaints();
+      if (unreadCount > 0) {
+        API.patch('/complaints/all/read')
+          .then(() => {
+            setAllComplaints(prev => prev.map(c => ({...c, isReadByAdmin: true})));
+          })
+          .catch(console.error);
+      }
+    }
+  }, [tab, unreadCount]);
+
+  const handleDeleteUser = async (id) => {
+    if (!window.confirm("هل أنت متأكد من حذف هذا المستخدم نهائياً؟")) return;
+    setActionLoading(id);
+    try {
+      await API.delete(`/auth/admin/users/${id}`);
+      NotifiySuccess("تم حذف المستخدم بنجاح");
+      if (tab === "pending") fetchPending();
+      else fetchAll();
+    } catch {
+    } finally {
+      setActionLoading(null);
+    }
+  };
 
   const handleVerify = async (id, action) => {
     setActionLoading(id);
@@ -232,6 +274,11 @@ export default function AdminUsers() {
       u.email?.toLowerCase().includes(search.toLowerCase()) ||
       u.section?.includes(search)
   );
+
+  const filteredComplaints = allcomplaints.filter((c) => {
+    if (complaintFilter === "all") return true;
+    return c.status === complaintFilter;
+  });
 
   const STATUS_LABEL = {
     pending: "قيد الانتظار",
@@ -276,12 +323,12 @@ export default function AdminUsers() {
         {[
           { id: "pending", label: "طلبات الانتظار", icon: Clock },
           { id: "all", label: "كل المستخدمين", icon: Users },
-          { id: "complaints", label: "الشكاوى", icon: MessageSquare },
-        ].map(({ id, label, icon: Icon }) => (
+          { id: "complaints", label: "الشكاوى", icon: MessageSquare, badge: unreadCount },
+        ].map(({ id, label, icon: Icon, badge }) => (
           <button
             key={id}
             onClick={() => setTab(id)}
-            className={`flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold transition-all ${
+            className={`flex relative items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold transition-all ${
               tab === id
                 ? "bg-indigo-600 text-white shadow-lg shadow-indigo-500/20"
                 : "text-slate-400 hover:text-slate-200"
@@ -289,12 +336,17 @@ export default function AdminUsers() {
           >
             <Icon className="w-4 h-4" />
             {label}
+            {badge > 0 && (
+              <span className="absolute top-1 left-2 bg-red-500 text-white text-[10px] w-5 h-5 flex items-center justify-center rounded-full font-bold">
+                {badge}
+              </span>
+            )}
           </button>
         ))}
       </div>
 
-      {/* Search - for users tabs */}
-      {tab !== "complaints" && (
+      {/* Filters & Search */}
+      {tab !== "complaints" ? (
         <div className="relative">
           <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
           <input
@@ -304,6 +356,28 @@ export default function AdminUsers() {
             onChange={(e) => setSearch(e.target.value)}
             className="w-full bg-slate-800/50 border border-slate-700/50 rounded-xl pr-10 pl-4 py-2.5 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500 transition-all"
           />
+        </div>
+      ) : (
+        <div className="flex flex-wrap gap-2 mb-4">
+          {[
+            { id: "all", label: "الكل" },
+            { id: "pending", label: "قيد الانتظار" },
+            { id: "in_progress", label: "جارٍ المعالجة" },
+            { id: "resolved", label: "تم الحل" },
+            { id: "rejected", label: "مرفوضة" },
+          ].map((f) => (
+            <button
+              key={f.id}
+              onClick={() => setComplaintFilter(f.id)}
+              className={`px-4 py-1.5 rounded-xl text-sm font-semibold transition-colors border ${
+                complaintFilter === f.id
+                  ? "bg-indigo-500/20 border-indigo-500/50 text-indigo-300"
+                  : "bg-slate-800/50 border-slate-700/50 text-slate-400 hover:border-slate-600 hover:text-slate-200"
+              }`}
+            >
+              {f.label}
+            </button>
+          ))}
         </div>
       )}
 
@@ -325,7 +399,7 @@ export default function AdminUsers() {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {filteredUsers.map((u) => (
-                  <UserCard key={u._id} u={u} onVerify={handleVerify} loading={actionLoading} />
+                  <UserCard key={u._id} u={u} onVerify={handleVerify} onDelete={handleDeleteUser} loading={actionLoading} />
                 ))}
               </div>
             )}
@@ -342,7 +416,7 @@ export default function AdminUsers() {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {filteredUsers.map((u) => (
-                  <UserCard key={u._id} u={u} onVerify={handleVerify} loading={actionLoading} />
+                  <UserCard key={u._id} u={u} onVerify={handleVerify} onDelete={handleDeleteUser} loading={actionLoading} />
                 ))}
               </div>
             )}
@@ -356,23 +430,30 @@ export default function AdminUsers() {
               <div className="flex items-center justify-center py-20 text-slate-500">
                 <Loader2 className="w-8 h-8 animate-spin ml-3" />جاري التحميل...
               </div>
-            ) : allcomplaints.length === 0 ? (
+            ) : filteredComplaints.length === 0 ? (
               <div className="text-center py-20">
                 <MessageSquare className="w-16 h-16 mx-auto mb-4 text-slate-600/30" />
-                <p className="text-slate-500 text-lg font-medium">لا توجد شكاوى بعد</p>
+                <p className="text-slate-500 text-lg font-medium">لا توجد شكاوى مطابقة</p>
               </div>
             ) : (
               <div className="space-y-4">
-                {allcomplaints.map((c) => (
+                {filteredComplaints.map((c) => (
                   <motion.div
                     key={c._id}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    className="bg-slate-800/50 border border-slate-700/50 rounded-2xl p-5"
+                    className={`bg-slate-800/50 border rounded-2xl p-5 ${
+                      !c.isReadByAdmin ? "border-indigo-500/40 shadow-[0_0_15px_rgba(99,102,241,0.1)]" : "border-slate-700/50"
+                    }`}
                   >
                     <div className="flex items-start justify-between gap-3 mb-3">
                       <div>
-                        <p className="text-white font-bold text-sm">{c.title}</p>
+                        <div className="flex items-center gap-2">
+                          <p className="text-white font-bold text-sm">{c.title}</p>
+                          {!c.isReadByAdmin && (
+                            <span className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
+                          )}
+                        </div>
                         <p className="text-slate-500 text-xs mt-0.5">
                           بواسطة: {c.userName} •{" "}
                           {new Date(c.createdAt).toLocaleDateString("ar-EG")}
