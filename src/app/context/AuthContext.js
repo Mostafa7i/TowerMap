@@ -20,6 +20,8 @@ export const AuthContext = ({ children }) => {
     } catch (err) {
       setUser(null);
       setLoggedIn(false);
+      // مسح الكوكي من الباك اند لو الحساب مش موجود أو التوكن غير صالح
+      API.post("/auth/logout").catch(() => {});
     } finally {
       setLoading(false);
     }

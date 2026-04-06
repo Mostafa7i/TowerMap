@@ -55,7 +55,12 @@ export default function DashboardPage() {
 
   useEffect(() => {
     if (!loading && !user) {
-      router.push("/Login");
+      router.replace("/Login");
+      // Fallback to clear any stuck navigation states
+      const timer = setTimeout(() => {
+        window.location.href = "/Login";
+      }, 500);
+      return () => clearTimeout(timer);
     }
   }, [loading, user, router]);
 
