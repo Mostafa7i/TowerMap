@@ -80,22 +80,22 @@ export default function LoginPage() {
     }
   };
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12">
+    <div className="flex bgTower2 min-h-screen items-center justify-center px-3 py-7">
       <motion.div
         whileTap={{ scale: 0.95 }}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, delay: 0.2 }}
-        className="w-full max-w-md overflow-hidden rounded-3xl shadow-2xl"
+        className="w-full max-w-md overflow-hidden rounded-3xl shadow-[0_8px_32px_rgba(0,0,0,0.3)]   backdrop-blur-2xl border border-white/40"
       >
         {/* الهيدر */}
-        <div className="bg-linear-to-r from-green-600 to-indigo-600 p-5 text-center">
+        <div className="bg-linear-to-r bgTower from-green-600/30 to-indigo-600/60 p-3 md:p-5 text-center">
           <motion.div
             whileTap={{ scale: 0.95 }}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-linear-to-br from-lime-500 to-indigo-500 text-xl font-bold text-white animate-pulse"
+            className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-linear-to-br from-lime-500/50 to-indigo-500 text-xl font-bold text-white animate-pulse"
           >
             Tower
           </motion.div>
@@ -113,14 +113,14 @@ export default function LoginPage() {
         {/* الفورم */}
         <form
           onSubmit={handleSubmit}
-          className="bg-white p-7 space-y-5"
+          className="p-7 space-y-5 text-white"
           dir="rtl"
         >
           {error && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="rounded-lg bg-red-50 p-4 text-center text-red-700 border border-red-200"
+              className="rounded-lg  bg-red-50 p-4 text-center text-red-700 border border-red-200"
             >
               {error}
             </motion.div>
@@ -136,7 +136,7 @@ export default function LoginPage() {
           >
             <label
               htmlFor="email"
-              className="mb-1 block text-lg font-medium text-gray-700"
+              className="mb-1 block text-lg font-medium text-white"
             >
               الإيميل
             </label>
@@ -166,7 +166,7 @@ export default function LoginPage() {
           >
             <label
               htmlFor="password"
-              className="mb-1 block text-lg font-medium text-gray-700"
+              className="mb-1 block text-lg font-medium text-white"
             >
               كلمة المرور
             </label>

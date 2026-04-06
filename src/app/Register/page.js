@@ -99,15 +99,15 @@ export default function RegisterPage() {
   if (isNavigating) return <SplashScreen />;
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12">
+    <div className="flex bgTower min-h-screen items-center justify-center px-2 py-6">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
-        className="w-full max-w-md overflow-hidden rounded-3xl shadow-2xl bg-white"
+        className="w-full   max-w-md overflow-hidden rounded-3xl shadow-[0_8px_32px_rgba(0,0,0,0.3)] backdrop-blur-3xl border border-white/40"
       >
         {/* Header - تحسين اللون */}
-        <div className="bg-linear-to-r from-indigo-600 to-purple-600 p-6 text-center">
+        <div className="bg-linear-to-r bgTower2  from-indigo-600 to-purple-600 p-3 md:p-6 text-center">
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-linear-to-br from-lime-500 to-indigo-500 md:text-lg font-bold text-white animate-pulse shadow-lg">
             Tower
           </div>
@@ -140,7 +140,7 @@ export default function RegisterPage() {
           onSubmit={handleSubmit}
         >
           {({ isSubmitting, values, setFieldTouched }) => (
-            <Form className="p-8 space-y-6" dir="rtl">
+            <Form className="p-4 md:p-8 text-white space-y-2" dir="rtl">
               {/* انميشن الانتقال بين الخطوات */}
               <AnimatePresence mode="wait">
                 <motion.div
@@ -152,12 +152,12 @@ export default function RegisterPage() {
                 >
                   {/* --- الخطوة الأولى --- */}
                   {step === 0 && (
-                    <div className="space-y-5">
+                    <div className="space-y-4">
                       {/* الاسم الكامل */}
                       <div>
                         <label
                           htmlFor="fullName"
-                          className="block text-sm font-medium text-gray-700"
+                          className="block text-sm font-medium text-white"
                         >
                           الاسم الكامل
                         </label>
@@ -181,7 +181,7 @@ export default function RegisterPage() {
                       <div>
                         <label
                           htmlFor="phone"
-                          className="block text-sm font-medium text-gray-700"
+                          className="block text-sm font-medium text-white"
                         >
                           رقم الهاتف
                         </label>
@@ -206,7 +206,7 @@ export default function RegisterPage() {
                       <div>
                         <label
                           htmlFor="section"
-                          className="block text-sm font-medium text-gray-700"
+                          className="block text-sm font-medium text-white"
                         >
                           التخصص
                         </label>
@@ -214,14 +214,11 @@ export default function RegisterPage() {
                           <Field
                             as="select"
                             name="section"
-                            className="w-full rounded-xl border border-gray-300 px-4 py-3 pr-11 bg-white"
+                            className="w-full text-black rounded-xl border border-gray-300 px-4 py-3 pr-11 bg-white"
                           >
-                            <option value="">اختر التخصص</option>
-                            <option value="مستخدم عادي">مستخدم عادي</option>
-                            <option value="مهندس سوفت وير">
-                              مهندس سوفت وير
-                            </option>
-                            <option value="مهندس شبكات">مهندس شبكات</option>
+                            <option className="text-black" value="" hidden>اختر التخصص</option>
+                            <option className="text-black" value="مستخدم عادي">مستخدم عادي</option>
+                            <option className="text-black" value="مهندس شبكات">مهندس شبكات</option>
                           </Field>
                           <Building className="absolute right-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
                         </div>
@@ -236,12 +233,12 @@ export default function RegisterPage() {
 
                   {/* --- الخطوة الثانية --- */}
                   {step === 1 && (
-                    <div className="space-y-5">
+                    <div className="space-y-4">
                       {/* الإيميل */}
                       <div>
                         <label
                           htmlFor="email"
-                          className="block text-sm font-medium text-gray-700"
+                          className="block text-sm font-medium text-white"
                         >
                           البريد الإلكتروني
                         </label>
@@ -265,7 +262,7 @@ export default function RegisterPage() {
                       <div>
                         <label
                           htmlFor="password"
-                          className="block text-sm font-medium text-gray-700"
+                          className="block text-sm font-medium text-white"
                         >
                           كلمة المرور
                         </label>
@@ -289,7 +286,7 @@ export default function RegisterPage() {
                       <div>
                         <label
                           htmlFor="confirmPassword"
-                          className="block text-sm font-medium text-gray-700"
+                          className="block text-sm font-medium text-white"
                         >
                           تأكيد كلمة المرور
                         </label>
@@ -319,7 +316,7 @@ export default function RegisterPage() {
                   <button
                     type="button"
                     onClick={() => setStep(step - 1)}
-                    className="w-full rounded-xl bg-gray-100 px-6 py-3 text-lg font-bold text-gray-700 hover:bg-gray-200 transition-all"
+                    className="w-full rounded-xl bg-gray-100 px-6 py-3 text-lg font-bold text-gray-600 hover:bg-gray-200 transition-all"
                   >
                     السابق
                   </button>

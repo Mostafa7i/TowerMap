@@ -134,6 +134,12 @@ body {
     position: relative;
   z-index: 1 !important; 
 }
+.bgTower{
+  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('/tower2.png') no-repeat center/cover;
+}
+.bgTower2{
+  background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('/tower3.png') no-repeat center/cover;
+}
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -141,4 +147,7 @@ body {
   body {
     @apply bg-background text-foreground;
   }
+}
+::placeholder{
+  color: rgb(181, 177, 177);
 }
