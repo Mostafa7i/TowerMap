@@ -1,5 +1,5 @@
 "use client";
-import { Key, Mail } from "lucide-react";
+import { Key, Mail, Loader2 } from "lucide-react";
 import Link from "next/link";
 import React, { useState } from "react";
 import {
@@ -20,6 +20,7 @@ export default function LoginPage() {
 
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState(false);
   const [error, setError] = useState("");
   const { setUser, getMe, setLoggedIn } = useAuth();
 
@@ -60,6 +61,7 @@ export default function LoginPage() {
       await getMe();
       setLoggedIn(true);
       NotifiySuccess(res.data.message);
+      setIsRedirecting(true);
 
       console.log("تسجيل دخول:", formData);
 
@@ -220,6 +222,17 @@ export default function LoginPage() {
           </p>
         </form>
       </motion.div>
+      
+      {/* ── Redirecting Loader Overlay ── */}
+      {isRedirecting && (
+        <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-gray-900/95 text-white backdrop-blur-md">
+          <Loader2 className="h-16 w-16 animate-spin text-indigo-500 mb-6" />
+          <h2 className="text-2xl font-bold bg-linear-to-r from-green-400 to-indigo-400 bg-clip-text text-transparent">
+            جاري تجهيز لوحة التحكم...
+          </h2>
+          <p className="text-slate-400 mt-2 font-mono text-sm">LOADING DASHBOARD</p>
+        </div>
+      )}
     </div>
   );
 }

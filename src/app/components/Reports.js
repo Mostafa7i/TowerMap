@@ -184,13 +184,13 @@ function RiskMeter({ value }) {
 
 
 // ─── Main Component ────────────────────────────────────────────────────────────
-export default function Reports({ towerAiResults = {} }) {
+export default function Reports({ towerAiResults = {}, initialTowerId = null }) {
   // ── useRef لتجنب re-render loop ──
   const aiResultsRef = useRef(towerAiResults);
   useEffect(() => { aiResultsRef.current = towerAiResults; }, [towerAiResults]);
 
   const [towers, setTowers]         = useState([]);
-  const [selectedId, setSelectedId] = useState("");
+  const [selectedId, setSelectedId] = useState(initialTowerId || "");
   const [towerData, setTowerData]   = useState(null);
   const [history, setHistory]       = useState([]);
   const [loading, setLoading]       = useState(false);
@@ -198,7 +198,15 @@ export default function Reports({ towerAiResults = {} }) {
   const [error, setError]           = useState("");
   const [reportDate]                = useState(now());
   const [activeSection, setActiveSection] = useState("all");
+  const [towerIssuesList, setTowerIssuesList] = useState([]);
+  const [reportNote, setReportNote] = useState("");
   const reportRef = useRef(null);
+
+  useEffect(() => {
+    if (initialTowerId) {
+      setSelectedId(initialTowerId);
+    }
+  }, [initialTowerId]);
 
   useEffect(() => {
     API.get("/towerMap/getTower")
@@ -207,12 +215,20 @@ export default function Reports({ towerAiResults = {} }) {
   }, []);
 
   useEffect(() => {
-    setError(""); setTowerData(null); setHistory([]);
+    setError(""); setTowerData(null); setHistory([]); setTowerIssuesList([]);
     if (!selectedId) return;
     setLoading(true);
-    API.get(`/towerMap/getOneTower/${selectedId}`)
-      .then(r => {
+    
+    // Fetch data and tickets
+    Promise.all([
+      API.get(`/towerMap/getOneTower/${selectedId}`),
+      API.get(`/towerIssues/tower/${selectedId}`).catch(() => ({ data: { data: [] } }))
+    ]).then(([r, issuesRes]) => {
         setTowerData(r.data);
+        if (issuesRes?.data?.data) {
+          setTowerIssuesList(issuesRes.data.data);
+        }
+        
         const m = r.data.lastMeasurement;
         if (m) {
           // ── البيانات الحقيقية من السيرفر ──
@@ -479,6 +495,59 @@ export default function Reports({ towerAiResults = {} }) {
         y += 17;
       });
 
+      // ── Custom Notes & Ticket Stats ──
+      if (reportNote || towerIssuesList.length > 0) {
+        checkPage(50);
+        secHdr("ملاحظات إضافية وسجل الصيانة", "MAINTENANCE & CUSTOM NOTES", C.violet);
+        
+        // Ticket Stats
+        fillRect(MARGIN, y, CW, 12, C.bg3, 2); strokeRect(MARGIN, y, CW, 12, C.border, 0.3, 2);
+        let statText = `إجمالي عدد التذاكر المفتوحة/السابقة على هذا البرج: ${towerIssuesList.length} تذكرة`;
+        text("🎫  " + statText, MARGIN+4, y+7, 8, C.slate200, "left", "bold");
+        
+        let targetAreaText = `المناطق والمقاطع المتضررة أو المخدومة من البرج: قطاعات منطقة ${tower?.TowerName?.split('-')[0] || "متعددة"}`;
+        y += 15;
+        fillRect(MARGIN, y, CW, 12, C.bg3, 2); strokeRect(MARGIN, y, CW, 12, C.border, 0.3, 2);
+        text("📍  " + targetAreaText, MARGIN+4, y+7, 8, C.slate200, "left");
+        y += 18;
+
+        if (towerIssuesList.length > 0) {
+          checkPage(20);
+          text("تفاصيل التذاكر المسجلة للبرج:", MARGIN, y, 7, C.slate500, "left");
+          y += 5;
+          // Table header for tickets
+          const tCols = ["#", "التاريخ", "الحالة", "عنوان المشكلة/التذكرة"];
+          const tColW = [10, 30, 25, 100];
+          let cx4 = MARGIN + 2;
+          tCols.forEach((col, i) => { text(col, cx4+1, y, 6.5, C.slate400, "left", "bold"); cx4 += tColW[i]; });
+          y += 4;
+          
+          towerIssuesList.slice(0, 5).forEach((issue, idx) => {
+            checkPage(10);
+            fillRect(MARGIN, y, CW, 8, idx % 2 === 0 ? C.bg2 : C.bg3, 1);
+            const statusLabel = issue.status === "open" ? "مفتوحة" : issue.status === "in_progress" ? "جارية" : issue.status === "resolved" ? "محلولة" : "مغلقة";
+            const vals = [idx + 1, new Date(issue.createdAt).toLocaleDateString("ar-EG"), statusLabel, issue.title];
+            let cx5 = MARGIN + 2;
+            vals.forEach((v, i) => { text(String(v), cx5+1, y+5.5, 6, i === 3 ? C.slate200 : C.slate500, "left"); cx5+=tColW[i]; });
+            y += 8.5;
+          });
+          y += 4;
+        }
+
+        if (reportNote) {
+          checkPage(30);
+          text("ملاحظات التقرير (مُضافة يدوياً):", MARGIN, y, 7, C.slate500, "left");
+          y += 4;
+          fillRect(MARGIN, y, CW, 30, C.bg2, 2); strokeRect(MARGIN, y, CW, 30, C.border, 0.3, 2);
+          
+          let splitNote = doc.splitTextToSize(reportNote, CW - 8);
+          doc.setFontSize(7);
+          doc.setTextColor(...C.slate200);
+          doc.text(splitNote, MARGIN+4, y+6, { align: "left" });
+          y += Math.max(35, splitNote.length * 4 + 10);
+        }
+      }
+
       // ── Footer + page numbers ──
       checkPage(16); y = Math.max(y, 272);
       fillRect(0, y, W, 16, C.bg3); hLine(y, C.border, 0.3);
@@ -664,8 +733,8 @@ export default function Reports({ towerAiResults = {} }) {
                   {[
                     { icon: Calendar, label: "تاريخ التقرير",   value: reportDate },
                     { icon: Clock,    label: "آخر قياس",         value: towerData.lastMeasurement?.createdAt ? new Date(towerData.lastMeasurement.createdAt).toLocaleString("ar-EG") : "—" },
-                    { icon: BarChart2,label: "إجمالي القياسات", value: `${history.length} قياس` },
-                    { icon: Shield,   label: "درجة الأمان",      value: health ? `${health.overall.toFixed(1)}%` : "—" },
+                    { icon: FileText, label: "إجمالي التذاكر",   value: `${towerIssuesList.length} تذكرة صيانة` },
+                    { icon: MapPin,   label: "المناطق المتضررة", value: `قطاعات منطقة ${tower?.TowerName?.split('-')[0] || "البرج"}` },
                   ].map(({ icon: I, label, value }, i) => (
                     <div key={i} className="bg-slate-800/40 rounded-xl px-4 py-3 border border-slate-700/50">
                       <div className="flex items-center gap-2 mb-1.5">
@@ -707,6 +776,52 @@ export default function Reports({ towerAiResults = {} }) {
                   </div>
                 </div>
               )}
+            </div>
+          )}
+
+          {/* ── TICKETS ── */}
+          {(activeSection === "all" || activeSection === "overview") && towerIssuesList.length > 0 && (
+            <div className="no-print bg-slate-900/40 border border-slate-700/50 rounded-2xl p-6 fade-up">
+              <SectionHeader icon={FileText} title="سجل صيانة التذاكر السابقة" subtitle="TOWER MAINTENANCE TICKETS" color="sky" />
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse text-xs mt-2">
+                  <thead>
+                    <tr className="border-b border-slate-700/50 text-slate-400 font-mono text-[10px]">
+                      <th className="p-3 text-right">#</th>
+                      <th className="p-3 text-right">التاريخ</th>
+                      <th className="p-3 text-right">الحالة</th>
+                      <th className="p-3 text-right">عنوان التذكرة</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {towerIssuesList.map((issue, idx) => (
+                      <tr key={issue._id} className="border-b border-slate-700/20 hover:bg-slate-800/30 transition-colors">
+                        <td className="p-3 font-mono text-slate-500 text-right">{idx + 1}</td>
+                        <td className="p-3 font-mono text-slate-300 text-right">{new Date(issue.createdAt).toLocaleDateString("ar-EG")}</td>
+                        <td className="p-3 text-right">
+                          <span className={`px-2 py-1 rounded text-[10px] font-bold ${issue.status === 'open' ? 'bg-red-500/10 text-red-400 border border-red-500/20' : issue.status === 'in_progress' ? 'bg-orange-500/10 text-orange-400 border border-orange-500/20' : issue.status === 'resolved' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-slate-500/10 text-slate-400 border border-slate-500/20'}`}>
+                            {issue.status === "open" ? "مفتوحة" : issue.status === "in_progress" ? "جارية" : issue.status === "resolved" ? "محلولة" : "مغلقة"}
+                          </span>
+                        </td>
+                        <td className="p-3 text-slate-200 text-right">{issue.title}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
+          {/* ── NOTES ── */}
+          {(activeSection === "all" || activeSection === "overview") && (
+            <div className="no-print bg-slate-900/60 border border-slate-700/60 rounded-2xl p-6 fade-up">
+              <SectionHeader icon={FileText} title="ملاحظات المهندس التكميلية" subtitle="ADDITIONAL REPORT NOTES" color="violet" />
+              <textarea
+                value={reportNote}
+                onChange={(e) => setReportNote(e.target.value)}
+                placeholder="اكتب هنا أي ملاحظات إضافية ترغب في طباعتها ضمن التقرير..."
+                className="w-full h-24 bg-slate-800/50 border border-slate-700/50 text-slate-200 rounded-xl p-4 text-sm font-mono focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500/50 transition-all resize-none shadow-inner"
+              />
             </div>
           )}
 

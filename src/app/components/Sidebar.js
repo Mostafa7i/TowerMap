@@ -15,9 +15,11 @@ import {
   LogOut,
   Clock,
   Users,
+  Ticket,
 } from "lucide-react";
 import { useState, useMemo } from "react";
 import { useAuth } from "@/app/context/AuthContext";
+import { useRouter } from "next/navigation";
 
 const NavLink = ({ icon, children, onClick, isActive }) => (
   <a
@@ -39,10 +41,16 @@ const NavLink = ({ icon, children, onClick, isActive }) => (
 export default function Sidebar({ activeView, setActiveView, toggle, isOpen, closeSidebar, towers = [], isAdmin = false }) {
   const [alertsVisible, setAlertsVisible] = useState(true);
   const { logOut, user } = useAuth();
+  const router = useRouter();
 
   const handleNavigation = (view) => {
     setActiveView(view);
     closeSidebar();
+  };
+
+  const goToAnalysis = (towerId) => {
+    closeSidebar();
+    router.push(`/dashboard?analyzeTower=${towerId}&t=${Date.now()}`);
   };
 
   // استخراج الأبراج الخطرة كـ تنبيهات
@@ -152,7 +160,15 @@ export default function Sidebar({ activeView, setActiveView, toggle, isOpen, clo
           >
             التقارير
           </NavLink>
+    
           <NavLink
+            icon={<Ticket className="w-5 h-5" />}
+            onClick={() => handleNavigation("issues")}
+            isActive={activeView === "issues"}
+          >
+            سجل المشاكل والتذاكر
+          </NavLink>
+                <NavLink
             icon={<Settings className="w-5 h-5" />}
             onClick={() => handleNavigation("settings")}
             isActive={activeView === "settings"}
@@ -200,7 +216,8 @@ export default function Sidebar({ activeView, setActiveView, toggle, isOpen, clo
                 recentAlerts.map((alert) => (
                   <div
                     key={alert.id}
-                    className={`flex items-start gap-2 rounded-lg px-3 py-2 border ${
+                    onClick={() => goToAnalysis(alert.id)}
+                    className={`flex items-start gap-2 rounded-lg px-3 py-2 border cursor-pointer hover:opacity-80 transition-opacity ${
                       alert.status === "danger"
                         ? "bg-red-500/5 border-red-500/20"
                         : alert.status === "critical"

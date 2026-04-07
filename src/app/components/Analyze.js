@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 import API from "../services/api";
 import {
   LineChart, Line, AreaChart, Area, RadarChart, Radar, PolarGrid,
@@ -8,7 +9,7 @@ import {
   Cell, PieChart, Pie
 } from "recharts";
 import {
-  AlertCircle, TrendingUp, Zap, Activity, Clock, Info
+  AlertCircle, TrendingUp, Zap, Activity, Clock, Info, FileText
 } from "lucide-react";
 import { getRecommendations } from "./GetRecommendations";
 
@@ -187,9 +188,10 @@ function EnsembleBar({ scores = [] }) {
 // ══════════════════════════════════════════════════════════════════════════════
 // MAIN COMPONENT
 // ══════════════════════════════════════════════════════════════════════════════
-export default function Analyze({ setTowerAiResults }) {
+export default function Analyze({ setTowerAiResults, initialTowerId }) {
+  const router = useRouter();
   const [towers, setTowers] = useState([]);
-  const [selectedTowerId, setSelectedTowerId] = useState("");
+  const [selectedTowerId, setSelectedTowerId] = useState(initialTowerId || "");
   const [networkStats, setNetworkStats] = useState(null);
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -203,6 +205,18 @@ export default function Analyze({ setTowerAiResults }) {
       .then(res => { if (res.data.success) setTowers(res.data.data); })
       .catch(() => setError("فشل في تحميل قائمة الأبراج."));
   }, []);
+
+  // ── Auto-select when initialTowerId comes in after towers load ──
+  const analyzeRef = useRef(null);
+  useEffect(() => {
+    if (initialTowerId && towers.length > 0) {
+      setSelectedTowerId(initialTowerId);
+      // scroll to the analyze panel
+      setTimeout(() => {
+        analyzeRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 300);
+    }
+  }, [initialTowerId, towers]);
 
   // ── Poll selected tower ──
   useEffect(() => {
@@ -303,7 +317,7 @@ export default function Analyze({ setTowerAiResults }) {
 
   const recs = getRecommendations(networkStats, prob, isAnomaly);
   return (
-    <div className="min-h-screen text-slate-100 relative" dir="rtl">
+    <div ref={analyzeRef} className="min-h-screen text-slate-100 relative" dir="rtl">
       <style>{`
         @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
         .animate-fadeIn { animation: fadeIn 0.4s ease forwards; }
@@ -311,6 +325,17 @@ export default function Analyze({ setTowerAiResults }) {
         ::-webkit-scrollbar-track{background:#0a1628}
         ::-webkit-scrollbar-thumb{background:#1e293b;border-radius:2px}
       `}</style>
+
+      {/* Auto-select notification banner */}
+      {initialTowerId && selectedTowerId === initialTowerId && (
+        <div className="mb-4 flex items-center gap-3 px-4 py-3 bg-indigo-500/10 border border-indigo-500/30 rounded-xl animate-fadeIn">
+          <span className="text-lg">🔔</span>
+          <div className="flex-1">
+            <p className="text-sm font-bold text-indigo-300">تم التحويل من إشعار التنبيه</p>
+            <p className="text-xs text-slate-400 font-mono">جارٍ تحليل البرج المحدد تلقائياً...</p>
+          </div>
+        </div>
+      )}
 
       {/* BG blobs */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
@@ -470,6 +495,17 @@ export default function Analyze({ setTowerAiResults }) {
                     </div>
                   </div>
                 )}
+
+                {/* زر الانتقال للتقارير المخصصة */}
+                <div className="mt-4 border-t border-slate-700/30 pt-4">
+                  <button
+                    onClick={() => router.push(`/dashboard?view=reports&towerId=${selectedTowerId}&t=${Date.now()}`)}
+                    className="w-full py-2.5 px-4 bg-sky-500/10 hover:bg-sky-500/20 text-sky-400 border border-sky-500/30 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-lg hover:shadow-sky-500/20"
+                  >
+                    <FileText size={15} />
+                    عرض في تقرير مخصص
+                  </button>
+                </div>
               </div>
             )}
           </div>

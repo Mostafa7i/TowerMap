@@ -1,7 +1,7 @@
 //dashboard
 "use client";
-import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import React, { useEffect, useState, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { User2, LayoutDashboard, Loader2 } from "lucide-react";
 import { useAuth } from "@/app/context/AuthContext";
 import Sidebar from "@/app/components/Sidebar";
@@ -14,15 +14,32 @@ import UserDashboard from "@/app/components/UserDashboard";
 import PendingVerification from "@/app/components/PendingVerification";
 import API from "../services/api";
 import SimulatorPage from "../components/Simulator";
+import TowerIssueHistory from "../components/TowerIssueHistory";
 
 const NORMAL_USER_SECTION = "مستخدم عادي";
 
-export default function DashboardPage() {
+function DashboardInner() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { user, loading } = useAuth();
   const [towers, setTowers] = useState([]);
   const [activeView, setActiveView] = useState("overview");
+
+  // tower pre-selected from notification click
+  const analyzeTowerId = searchParams?.get("analyzeTower") || null;
+  const targetView = searchParams?.get("view") || null;
+  const targetTowerId = searchParams?.get("towerId") || null;
+  const urlTimestamp = searchParams?.get("t") || null;
+
+  // إذا تم اختيار برج للتحليل أو عرض التقارير
+  useEffect(() => {
+    if (analyzeTowerId) {
+      setActiveView("overview");
+    } else if (targetView === "reports") {
+      setActiveView("reports");
+    }
+  }, [analyzeTowerId, targetView, urlTimestamp]);
 
   const [stats, setStats] = useState({ critical: 0, warning: 0, normal: 0 });
 
@@ -92,16 +109,18 @@ export default function DashboardPage() {
       case "createTower":
         return <CreateTower towers={towers} />;
       case "reports":
-        return <Reports towers={towers} />;
+        return <Reports towers={towers} initialTowerId={targetTowerId} />;
       case "simulator":
         return <SimulatorPage towers={towers} />;
       case "settings":
         return <Settings towers={towers} />;
       case "adminUsers":
         return <AdminUsers />;
+      case "issues":
+        return <TowerIssueHistory user={user} />;
       case "overview":
       default:
-        return <Overview user={user} towers={towers} stats={stats} />;
+        return <Overview user={user} towers={towers} stats={stats} analyzeTowerId={analyzeTowerId} />;
     }
   };
 
@@ -160,5 +179,17 @@ export default function DashboardPage() {
         </div>
       </main>
     </div>
+  );
+}
+
+export default function DashboardPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex h-screen w-full items-center justify-center bg-slate-950">
+        <Loader2 className="h-10 w-10 animate-spin text-indigo-400" />
+      </div>
+    }>
+      <DashboardInner />
+    </Suspense>
   );
 }

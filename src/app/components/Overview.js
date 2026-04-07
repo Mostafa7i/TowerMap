@@ -369,7 +369,7 @@ function SearchFilterBar({ searchTerm, setSearchTerm, filterStatus, setFilterSta
 }
 
 // ─── Overview ─────────────────────────────────────────────────────────────────
-export default function Overview({ user, towers, onDelete }) {
+export default function Overview({ user, towers, onDelete, analyzeTowerId }) {
   const [towerAiResults, setTowerAiResults] = useState({});
   const [searchTerm, setSearchTerm]         = useState("");
   const [filterStatus, setFilterStatus]     = useState([...ALL_STATUSES]);
@@ -435,7 +435,7 @@ export default function Overview({ user, towers, onDelete }) {
 
       {/* Analyze */}
       <div className="relative z-10">
-        <Analyze setTowerAiResults={setTowerAiResults} />
+        <Analyze setTowerAiResults={setTowerAiResults} initialTowerId={analyzeTowerId} />
       </div>
 
       {/* Search & Filter */}

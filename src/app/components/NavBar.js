@@ -11,9 +11,10 @@ import {
   AlertTriangle,
   LayoutDashboardIcon,
   Clock,
+  ExternalLink,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import SplashScreen from "./SplashScreen";
 import API from "../services/api";
 
@@ -23,7 +24,14 @@ export default function Navbar() {
   const [alertsDropdownOpen, setAlertsDropdownOpen] = useState(false);
   const [towers, setTowers] = useState([]);
   const pathname = usePathname();
+  const router = useRouter();
 
+  // ─── navigate to dashboard with tower pre-selected for analysis ─────────
+  const goToAnalysis = (towerId) => {
+    setAlertsDropdownOpen(false);
+    setMobileMenuOpen(false);
+    router.push(`/dashboard?analyzeTower=${towerId}&t=${Date.now()}`);
+  };
 
 useEffect(() => {
   const fetchAlerts = async () => {
@@ -171,18 +179,33 @@ const recentAlerts = towers
                           </div>
                         ) : (
                           recentAlerts.map((alert) => (
-                            <div key={alert.id} className={`p-4 border-b border-slate-800 hover:bg-slate-800/40 transition-colors cursor-pointer group`}>
+                            <div
+                              key={alert.id}
+                              onClick={() => goToAnalysis(alert.id)}
+                              className={`p-4 border-b border-slate-800 hover:bg-slate-800/40 transition-colors cursor-pointer group`}
+                            >
                               <div className="flex items-start gap-3 text-right" dir="rtl">
-                                <div className={`mt-1 p-2 rounded-lg ${alert.type === 'critical' ? 'bg-red-500/10 text-red-500' : 'bg-yellow-500/10 text-yellow-500'}`}>
+                                <div className={`mt-1 p-2 rounded-lg ${alert.type === 'critical' ? 'bg-red-500/10 text-red-500' : alert.type === 'danger' ? 'bg-red-600/20 text-red-400' : 'bg-yellow-500/10 text-yellow-500'}`}>
                                   <AlertTriangle size={18} />
                                 </div>
                                 <div className="flex-1">
-                                  <p className="font-bold text-slate-100 text-sm group-hover:text-indigo-400 transition-colors">{alert.tower}</p>
-                                  <p className="text-xs text-slate-400 mt-1 font-mono">{alert.detail}</p>
-                                  <div className="flex items-center gap-1 mt-2 text-[10px] text-slate-500">
-                                    <Clock size={10} />
-                                    {new Date(alert.time).toLocaleTimeString("ar-EG")}
+                                  <div className="flex items-center justify-between gap-2">
+                                    <p className="font-bold text-slate-100 text-sm group-hover:text-indigo-400 transition-colors">{alert.tower}</p>
+                                    <ExternalLink size={12} className="text-slate-500 group-hover:text-indigo-400 transition-colors shrink-0" />
                                   </div>
+                                  <p className="text-xs text-slate-400 mt-1 font-mono">{alert.detail}</p>
+                                  <div className="flex items-center gap-2 mt-2">
+                                    <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${
+                                      alert.type === 'danger' ? 'bg-red-500/20 text-red-400' :
+                                      alert.type === 'critical' ? 'bg-orange-500/20 text-orange-400' :
+                                      'bg-yellow-500/20 text-yellow-400'
+                                    }`}>{alert.type.toUpperCase()}</span>
+                                    <div className="flex items-center gap-1 text-[10px] text-slate-500">
+                                      <Clock size={10} />
+                                      {new Date(alert.time).toLocaleTimeString("ar-EG")}
+                                    </div>
+                                  </div>
+                                  <p className="text-[9px] text-indigo-400 mt-1.5 font-mono">← انقر للتحليل الفوري</p>
                                 </div>
                               </div>
                             </div>
