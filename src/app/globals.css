@@ -151,3 +151,19 @@ body {
 ::placeholder{
   color: rgb(181, 177, 177);
 }
+::-webkit-scrollbar{
+  background-color: indigo;
+  width: 5px;
+  border-radius: 50%;
+}
+
+::-webkit-scrollbar-thumb{
+  width: 0;
+  background-color: white;
+  border-radius: 50%;
+}
+
+::-webkit-scrollbar-track{
+  width: 0;
+  background-color: indigo;
+}

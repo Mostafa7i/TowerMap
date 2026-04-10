@@ -22,7 +22,6 @@ const Icon = {
 const PRESETS = [
   { id: "normal",   label: "طبيعي",     icon: "🟢", values: { latency: 20,  throughput: 100, packetLoss: 0,   jitter: 2   }, color: "#10b981" },
   { id: "degraded", label: "متدهور",    icon: "🟡", values: { latency: 80,  throughput: 40,  packetLoss: 5,   jitter: 15  }, color: "#f59e0b" },
-  { id: "stress",   label: "ضغط عالٍ", icon: "🟠", values: { latency: 200, throughput: 10,  packetLoss: 20,  jitter: 80  }, color: "#f97316" },
   { id: "dead",     label: "إيقاف",     icon: "🔴", values: { latency: 999, throughput: 0,   packetLoss: 100, jitter: 500 }, color: "#ef4444" },
 ];
 

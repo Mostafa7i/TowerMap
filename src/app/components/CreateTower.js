@@ -208,7 +208,6 @@ export default function CreateTower() {
 
   const TOWERS = [
     { value: "Cairo Tower", label: "برج القاهرة", icon: "🗼", lat: "30.0444", lng: "31.2357" },
-    { value: "Geza Tower", label: "برج الجيزة", icon: "🏗", lat: "30.0131", lng: "31.2089" },
     { value: "Mansoura Tower", label: "برج المنصورة", icon: "📡", lat: "31.0409", lng: "31.3785" },
     { value: "Tanta Tower", label: "برج طنطا", icon: "📶", lat: "30.7865", lng: "31.0004" },
     { value: "Alexandria Tower", label: "برج الإسكندرية", icon: "🏛", lat: "31.2001", lng: "29.9187" },
@@ -262,19 +261,47 @@ export default function CreateTower() {
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
                       {TOWERS.map((t) => (
                         <button key={t.value} type="button"
-                          onClick={() => setFormData((p) => ({ ...p, TowerName: t.value, lat: t.lat, lng: t.lng }))}
+                          onClick={() => {
+                            setFormData((p) => ({ ...p, TowerName: t.value, lat: t.lat, lng: t.lng, isCustomTower: false }));
+                          }}
                           className="ct-option-btn"
                           style={{
-                            background: formData.TowerName === t.value ? "rgba(14,165,233,0.15)" : "#0a1628",
-                            border: `1px solid ${formData.TowerName === t.value ? "#0ea5e9" : "#1e293b"}`,
-                            boxShadow: formData.TowerName === t.value ? "0 0 16px rgba(14,165,233,0.2)" : "none"
+                            background: formData.TowerName === t.value && !formData.isCustomTower ? "rgba(14,165,233,0.15)" : "#0a1628",
+                            border: `1px solid ${formData.TowerName === t.value && !formData.isCustomTower ? "#0ea5e9" : "#1e293b"}`,
+                            boxShadow: formData.TowerName === t.value && !formData.isCustomTower ? "0 0 16px rgba(14,165,233,0.2)" : "none"
                           }}>
                           <span style={{ fontSize: 18 }}>{t.icon}</span>
-                          <span style={{ fontSize: 12, color: formData.TowerName === t.value ? "#38bdf8" : "#64748b", fontFamily: "monospace" }}>{t.label}</span>
-                          {formData.TowerName === t.value && <span style={{ marginRight: "auto", color: "#0ea5e9", fontSize: 14 }}>✓</span>}
+                          <span style={{ fontSize: 12, color: formData.TowerName === t.value && !formData.isCustomTower ? "#38bdf8" : "#64748b", fontFamily: "monospace" }}>{t.label}</span>
+                          {formData.TowerName === t.value && !formData.isCustomTower && <span style={{ marginRight: "auto", color: "#0ea5e9", fontSize: 14 }}>✓</span>}
                         </button>
                       ))}
+                      <button type="button"
+                          onClick={() => {
+                            setFormData((p) => ({ ...p, TowerName: "", lat: "", lng: "", isCustomTower: true }));
+                          }}
+                          className="ct-option-btn"
+                          style={{
+                            background: formData.isCustomTower ? "rgba(14,165,233,0.15)" : "#0a1628",
+                            border: `1px solid ${formData.isCustomTower ? "#0ea5e9" : "#1e293b"}`,
+                            boxShadow: formData.isCustomTower ? "0 0 16px rgba(14,165,233,0.2)" : "none"
+                          }}>
+                          <span style={{ fontSize: 18 }}>✏️</span>
+                          <span style={{ fontSize: 12, color: formData.isCustomTower ? "#38bdf8" : "#64748b", fontFamily: "monospace" }}>إدخال اسم غير موجود</span>
+                          {formData.isCustomTower && <span style={{ marginRight: "auto", color: "#0ea5e9", fontSize: 14 }}>✓</span>}
+                      </button>
                     </div>
+                    {formData.isCustomTower && (
+                      <div className="fade-in" style={{ marginTop: 12 }}>
+                        <input
+                          type="text"
+                          placeholder="اكتب اسم البرج هنا..."
+                          className="ct-input"
+                          value={formData.TowerName}
+                          onChange={(e) => setFormData(p => ({ ...p, TowerName: e.target.value }))}
+                          autoFocus
+                        />
+                      </div>
+                    )}
                   </FloatField>
 
                   <FloatField label="الشركة المصنعة" icon="🏭">
