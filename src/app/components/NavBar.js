@@ -17,6 +17,7 @@ import { useAuth } from "../context/AuthContext";
 import { usePathname, useRouter } from "next/navigation";
 import SplashScreen from "./SplashScreen";
 import API from "../services/api";
+import Logo from "./Logo";
 
 export default function Navbar() {
   const { user, logOut, loading } = useAuth();
@@ -75,16 +76,20 @@ const recentAlerts = towers
     const loss = t.lastMeasurement?.packetLoss || 0;
     
     let alertType = 'warning';
+    let arType = 'تحذير';
     if (status === 'danger' || latency >= 300 || loss >= 15) {
       alertType = 'danger';
+      arType = 'خطر';
     } else if (status === 'critical' || latency >= 150 || loss >= 10) {
       alertType = 'critical';
+      arType = 'حرج';
     }
 
     return {
       id: t._id,
       tower: t.TowerName,
       type: alertType,
+      arType: arType,
       detail: `Latency: ${t.lastMeasurement?.latency ?? 'N/A'}ms | Loss: ${t.lastMeasurement?.packetLoss ?? 'N/A'}%`,
       time: t.updatedAt
     };
@@ -105,22 +110,9 @@ const recentAlerts = towers
       <div className="max-w-8xl mx-auto px-4">
         <div className="flex justify-between items-center h-20">
           {/* Logo */}
-          <Link
-            href="/"
-            className="flex items-center gap-3 cursor-pointer group"
-          >
-            <div className="w-11 h-11 bg-linear-to-br from-indigo-600 to-purple-700 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-              <Radio className="text-white" size={24} />
-            </div>
-            <h1
-              className={`${
-                pathname === "/"
-                  ? "text-2xl font-bold bg-linear-to-r from-lime-600 to-purple-500 drop-shadow-2xl  bg-clip-text text-transparent scale-105 " // الشكل لما يكون نشط
-                  : "text-2xl font-bold bg-linear-to-r from-indigo-300 to-purple-500 bg-clip-text text-transparent"
-              }`}
-            >
-              TowerMonitor
-            </h1>
+          {/* Logo */}
+          <Link href="/" className="scale-90 origin-right transition-transform hover:scale-95">
+            <Logo animated={true} />
           </Link>
 
           {/* Desktop Navigation */}
@@ -185,7 +177,7 @@ const recentAlerts = towers
                               className={`p-4 border-b border-slate-800 hover:bg-slate-800/40 transition-colors cursor-pointer group`}
                             >
                               <div className="flex items-start gap-3 text-right" dir="rtl">
-                                <div className={`mt-1 p-2 rounded-lg ${alert.type === 'critical' ? 'bg-red-500/10 text-red-500' : alert.type === 'danger' ? 'bg-red-600/20 text-red-400' : 'bg-yellow-500/10 text-yellow-500'}`}>
+                                <div className={`mt-1 p-2 rounded-lg ${alert.type === 'danger' ? 'bg-red-500/10 text-red-500' : alert.type === 'critical' ? 'bg-orange-500/20 text-orange-400' : 'bg-yellow-500/10 text-yellow-500'}`}>
                                   <AlertTriangle size={18} />
                                 </div>
                                 <div className="flex-1">
@@ -199,7 +191,7 @@ const recentAlerts = towers
                                       alert.type === 'danger' ? 'bg-red-500/20 text-red-400' :
                                       alert.type === 'critical' ? 'bg-orange-500/20 text-orange-400' :
                                       'bg-yellow-500/20 text-yellow-400'
-                                    }`}>{alert.type.toUpperCase()}</span>
+                                    }`}>{alert.arType}</span>
                                     <div className="flex items-center gap-1 text-[10px] text-slate-500">
                                       <Clock size={10} />
                                       {new Date(alert.time).toLocaleTimeString("ar-EG")}

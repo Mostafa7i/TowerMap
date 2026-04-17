@@ -17,10 +17,10 @@ import { getRecommendations } from "./GetRecommendations";
 const clamp = (val, min, max) => Math.min(Math.max(val, min), max);
 
 function getRiskLevel(prob) {
-  if (prob >= 75) return { label: "حرج", color: "#ef4444", bg: "bg-red-500/10", border: "border-red-500/30", glow: "#ef4444" };
-  if (prob >= 50) return { label: "مرتفع", color: "#f97316", bg: "bg-orange-500/10", border: "border-orange-500/30", glow: "#f97316" };
-  if (prob >= 25) return { label: "متوسط", color: "#eab308", bg: "bg-yellow-500/10", border: "border-yellow-500/30", glow: "#eab308" };
-  return { label: "منخفض", color: "#22c55e", bg: "bg-emerald-500/10", border: "border-emerald-500/30", glow: "#22c55e" };
+  if (prob >= 75) return { label: "خطر", color: "#ef4444", bg: "bg-red-500/10", border: "border-red-500/30", glow: "#ef4444" };
+  if (prob >= 50) return { label: "حرج", color: "#f97316", bg: "bg-orange-500/10", border: "border-orange-500/30", glow: "#f97316" };
+  if (prob >= 25) return { label: "تحذير", color: "#eab308", bg: "bg-yellow-500/10", border: "border-yellow-500/30", glow: "#eab308" };
+  return { label: "طبيعي", color: "#10b981", bg: "bg-emerald-500/10", border: "border-emerald-500/30", glow: "#10b981" };
 }
 
 function getMetricScore(latency, packetLoss, jitter, throughput) {

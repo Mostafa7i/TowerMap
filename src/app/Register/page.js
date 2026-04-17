@@ -11,6 +11,7 @@ import { NotifiyErorr, NotifiySuccess } from "../components/Notify";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../context/AuthContext";
 import SplashScreen from "../components/SplashScreen"; // افترضنا وجوده
+import Logo from "../components/Logo";
 
 // 1. تقسيم الـ Schema لخطوات
 const stepOneSchema = Yup.object({
@@ -99,19 +100,37 @@ export default function RegisterPage() {
   if (isNavigating) return <SplashScreen />;
 
   return (
-    <div className="flex bgTower min-h-screen items-center justify-center px-2 py-6">
+    <div className="relative flex min-h-screen items-center justify-center px-2 py-6 overflow-hidden bg-[#060913]">
+      {/* Background Graphic */}
+      <div className="absolute inset-0 transition-all duration-1000 mix-blend-screen pointer-events-none" style={{ 
+        backgroundImage: "url('/pic/auth_bg.png')", 
+        backgroundSize: "cover", 
+        backgroundPosition: "center",
+        opacity: 0.25
+      }}></div>
+      
+      {/* Gradient Overlay */}
+      <div className="absolute inset-0 bg-linear-to-b from-[#060913]/30 via-[#060913]/60 to-slate-950 pointer-events-none"></div>
+
+      {/* Glowing Animated Blobs */}
+      <div className="absolute inset-0 opacity-40 pointer-events-none">
+        <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-violet-600/30 rounded-full mix-blend-screen filter blur-[120px] animate-blob"></div>
+        <div className="absolute top-1/3 right-1/4 w-[500px] h-[500px] bg-cyan-600/30 rounded-full mix-blend-screen filter blur-[120px] animate-blob animation-delay-2000"></div>
+        <div className="absolute bottom-1/4 left-1/2 w-[500px] h-[500px] bg-indigo-600/30 rounded-full mix-blend-screen filter blur-[120px] animate-blob animation-delay-4000"></div>
+      </div>
+
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
-        className="w-full   max-w-md overflow-hidden rounded-3xl shadow-[0_8px_32px_rgba(0,0,0,0.3)] backdrop-blur-3xl border border-white/40"
+        className="w-full max-w-md overflow-hidden rounded-3xl shadow-[0_8px_32px_rgba(0,0,0,0.3)] backdrop-blur-3xl border border-white/10 relative z-10 bg-transparent"
       >
         {/* Header - تحسين اللون */}
-        <div className="bg-linear-to-r bgTower2  from-indigo-600 to-purple-600 p-3 md:p-6 text-center">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-linear-to-br from-lime-500 to-indigo-500 md:text-lg font-bold text-white animate-pulse shadow-lg">
-            Tower
+        <div className="bg-linear-to-r from-violet-600/30 to-cyan-600/30 border-b border-white/5 p-3 md:p-6 text-center flex flex-col items-center">
+          <div className="mb-5 flex justify-center scale-110 mt-2">
+            <Logo animated={true} iconSize={40} />
           </div>
-          <h1 className="text-2xl font-bold text-white">إنشاء حساب جديد</h1>
+          <h1 className="text-2xl font-bold text-white drop-shadow-md">إنشاء حساب جديد</h1>
           <p className="text-indigo-100 mt-1">
             الخطوة {step + 1} من {totalSteps}
           </p>

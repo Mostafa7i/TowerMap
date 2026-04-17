@@ -81,12 +81,24 @@ export default function Home() {
     <div className="relative overflow-hidden bg-slate-950" dir="rtl">
       {/* Hero Section */}
       <div className="relative min-h-svh flex flex-col items-center justify-center px-6 overflow-hidden">
-        {/* Animated Background */}
-        <div className="absolute inset-0 bg-linear-to-br from-violet-950 via-slate-950 to-fuchsia-950">
-          <div className="absolute inset-0 opacity-30">
-            <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-violet-600 rounded-full mix-blend-multiply filter blur-3xl animate-blob"></div>
-            <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-fuchsia-600 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-2000"></div>
-            <div className="absolute bottom-1/4 left-1/2 w-96 h-96 bg-indigo-600 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-4000"></div>
+        {/* Animated Background + Towers Graphic */}
+        <div className="absolute inset-0 bg-[#060913]">
+          {/* Towers Image with pulse animation styling */}
+          <div className="absolute inset-0 transition-all duration-1000 mix-blend-screen" style={{ 
+            backgroundImage: "url('/pic/hero_bg_towers.png')", 
+            backgroundSize: "cover", 
+            backgroundPosition: "center",
+            opacity: 0.25
+          }}></div>
+          
+          {/* Gradient Overlay for blending into the next section */}
+          <div className="absolute inset-0 bg-linear-to-b from-[#060913]/30 via-[#060913]/70 to-slate-950"></div>
+
+          {/* Glowing Animated Blobs */}
+          <div className="absolute inset-0 opacity-50">
+            <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-violet-600/40 rounded-full mix-blend-screen filter blur-[120px] animate-blob"></div>
+            <div className="absolute top-1/3 right-1/4 w-[500px] h-[500px] bg-cyan-600/40 rounded-full mix-blend-screen filter blur-[120px] animate-blob animation-delay-2000"></div>
+            <div className="absolute bottom-1/4 left-1/2 w-[500px] h-[500px] bg-indigo-600/40 rounded-full mix-blend-screen filter blur-[120px] animate-blob animation-delay-4000"></div>
           </div>
         </div>
         <div className="inline-block -mt-20 md:-mt-32 mb-12">
@@ -400,22 +412,59 @@ export default function Home() {
         </Swiper>
       </motion.div>
       {/* Footer */}
-      <footer className="relative bg-slate-950 border-t border-white/10 py-16 px-6">
-        <div className="max-w-7xl mx-auto text-center">
-          <h2 className="text-3xl md:text-5xl font-black text-white mb-4">
-            نظام مراقبة أبراج النظام الذكي
-          </h2>
-          <p className="text-gray-400 text-lg mb-8">مشروع تخرج 2025-2026</p>
+      <footer className="relative bg-slate-950 border-t border-white/10 py-16 px-6 overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_center,rgba(139,92,246,0.15),transparent_50%)]"></div>
+        <div className="relative max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-8 mb-12 text-center md:text-right min-h-[150px]" dir="rtl">
+            {/* About the System */}
+            <div className="space-y-4 flex flex-col">
+              <h2 className="text-3xl font-black text-white">
+                <span className="bg-linear-to-r from-cyan-400 to-violet-500 bg-clip-text text-transparent">TowerMonitor</span>
+              </h2>
+              <p className="text-gray-400 text-sm leading-relaxed flex-1">
+                 نظام متطور يعتمد على خوارزميات الذكاء الاصطناعي لمراقبة أعطال شبكات الاتصالات والتنبؤ بها استباقياً لضمان استمرارية الخدمة.
+              </p>
+              <p className="text-violet-400/80 text-xs font-mono">مشروع تخرج 2025-2026</p>
+            </div>
+            
+            {/* About */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-center md:justify-start gap-2 mb-4">
+                <div className="w-8 h-1 rounded-full bg-violet-500"></div>
+                <h3 className="text-xl font-bold text-white">عنا</h3>
+              </div>
+              <p className="text-gray-400 text-sm leading-relaxed">
+                نحن فريق من المطورين والمهندسين الطموحين، نسعى لبناء حلول تقنية ذكية ومستدامة. نؤمن بأن التكنولوجيا هي المفتاح لرفع كفاءة البنية التحتية وحل المشكلات المعقدة.
+              </p>
+            </div>
 
-          <div className="flex items-center justify-center gap-3 text-gray-500 text-sm">
-            <span>صنع بـ</span>
-            <span className="text-rose-400 animate-pulse">♥</span>
-            <span>في مصر</span>
+            {/* Mission */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-center md:justify-start gap-2 mb-4">
+                <div className="w-8 h-1 rounded-full bg-cyan-500"></div>
+                <h3 className="text-xl font-bold text-white">رسالتنا</h3>
+              </div>
+              <p className="text-gray-400 text-sm leading-relaxed">
+                الوصول إلى بيئة اتصالات خالية من الانقطاعات (Zero-Downtime) وتوفير تجربة مستخدم مثالية لشركات الاتصالات من خلال المراقبة والتحليل اللحظي والتقارير الذكية.
+              </p>
+            </div>
+          </div>
+
+          {/* Bottom Footer */}
+          <div className="pt-6 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4">
+            <p className="text-gray-500 text-sm">
+              © {new Date().getFullYear()} TowerMonitor. جميع الحقوق محفوظة.
+            </p>
+            <div className="flex items-center justify-center gap-2 text-gray-500 text-sm font-medium">
+              <span>صنع بـ</span>
+              <span className="text-rose-500 animate-pulse text-lg">♥</span>
+              <span>في مصر</span>
+            </div>
           </div>
         </div>
 
         {/* Decorative Elements */}
-        <div className="absolute bottom-0 left-0 w-full h-1 bg-linear-to-r from-transparent via-violet-500 to-transparent opacity-50"></div>
+        <div className="absolute bottom-0 left-0 w-full h-1 bg-linear-to-r from-transparent via-cyan-500 to-transparent opacity-50"></div>
       </footer>
       {/* Custom Animations */}
       <style jsx>{`

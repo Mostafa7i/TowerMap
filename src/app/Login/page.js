@@ -11,6 +11,7 @@ import { motion } from "framer-motion";
 import API from "../services/api";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../context/AuthContext";
+import Logo from "../components/Logo";
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({
@@ -82,24 +83,41 @@ export default function LoginPage() {
     }
   };
   return (
-    <div className="flex bgTower2 min-h-screen items-center justify-center px-3 py-7">
+    <div className="relative flex min-h-screen items-center justify-center px-3 py-7 overflow-hidden bg-[#060913]">
+      {/* Background Graphic */}
+      <div className="absolute inset-0 transition-all duration-1000 mix-blend-screen pointer-events-none" style={{ 
+        backgroundImage: "url('/pic/auth_bg.png')", 
+        backgroundSize: "cover", 
+        backgroundPosition: "center",
+        opacity: 0.25
+      }}></div>
+      
+      {/* Gradient Overlay */}
+      <div className="absolute inset-0 bg-linear-to-b from-[#060913]/30 via-[#060913]/60 to-slate-950 pointer-events-none"></div>
+
+      {/* Glowing Animated Blobs */}
+      <div className="absolute inset-0 opacity-40 pointer-events-none">
+        <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-violet-600/30 rounded-full mix-blend-screen filter blur-[120px] animate-blob"></div>
+        <div className="absolute top-1/3 right-1/4 w-[500px] h-[500px] bg-cyan-600/30 rounded-full mix-blend-screen filter blur-[120px] animate-blob animation-delay-2000"></div>
+        <div className="absolute bottom-1/4 left-1/2 w-[500px] h-[500px] bg-indigo-600/30 rounded-full mix-blend-screen filter blur-[120px] animate-blob animation-delay-4000"></div>
+      </div>
+
       <motion.div
         whileTap={{ scale: 0.95 }}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, delay: 0.2 }}
-        className="w-full max-w-md overflow-hidden rounded-3xl shadow-[0_8px_32px_rgba(0,0,0,0.3)]   backdrop-blur-2xl border border-white/40"
+        className="w-full max-w-md overflow-hidden rounded-3xl shadow-[0_8px_32px_rgba(0,0,0,0.3)] backdrop-blur-2xl border border-white/10 relative z-10 bg-slate-900/40"
       >
         {/* الهيدر */}
-        <div className="bg-linear-to-r bgTower from-green-600/30 to-indigo-600/60 p-3 md:p-5 text-center">
+        <div className="bg-linear-to-r from-violet-600/20 to-cyan-600/20 border-b border-white/5 p-3 md:p-5 text-center flex flex-col items-center">
           <motion.div
-            whileTap={{ scale: 0.95 }}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-linear-to-br from-lime-500/50 to-indigo-500 text-xl font-bold text-white animate-pulse"
+            className="mb-6 flex justify-center scale-110 mt-2"
           >
-            Tower
+            <Logo animated={true} iconSize={44} />
           </motion.div>
           <motion.h2
             whileTap={{ scale: 0.95 }}

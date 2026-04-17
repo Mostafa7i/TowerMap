@@ -151,7 +151,7 @@ function TowerCard({ tower, data, onChange, onApply, onKill, onReset, onPreset, 
   const [collapsed, setCollapsed] = useState(false);
   const [confirmKill, setConfirmKill] = useState(false);
   const health = getTowerHealth(data);
-  const healthColor = health >= 70 ? "#10b981" : health >= 40 ? "#f59e0b" : "#ef4444";
+  const healthColor = health === 100 ? "#10b981" : health >= 80 ? "#f59e0b" : "#ef4444";
   const isDead = data?.latency >= 999 || data?.packetLoss >= 99;
 
   return (
@@ -466,17 +466,17 @@ export default function SimulatorPage() {
   const filteredTowers = towers.filter(tw => {
     if (filter === "all") return true;
     const h = getTowerHealth(editData[tw.ip_address]);
-    if (filter === "warning") return h < 70 && h >= 40;
-    if (filter === "critical") return h < 40;
+    if (filter === "warning") return h < 100 && h >= 80;
+    if (filter === "critical") return h < 80;
     return true;
   });
 
   // ── Stats ──
   const stats = {
     total:    towers.length,
-    healthy:  towers.filter(tw => getTowerHealth(editData[tw.ip_address]) >= 70).length,
-    warning:  towers.filter(tw => { const h = getTowerHealth(editData[tw.ip_address]); return h < 70 && h >= 40; }).length,
-    critical: towers.filter(tw => getTowerHealth(editData[tw.ip_address]) < 40).length,
+    healthy:  towers.filter(tw => getTowerHealth(editData[tw.ip_address]) === 100).length,
+    warning:  towers.filter(tw => { const h = getTowerHealth(editData[tw.ip_address]); return h < 100 && h >= 80; }).length,
+    critical: towers.filter(tw => getTowerHealth(editData[tw.ip_address]) < 80).length,
   };
 
   return (
