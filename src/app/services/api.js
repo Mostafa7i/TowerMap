@@ -32,7 +32,7 @@ API.interceptors.response.use(
             error.response?.data?.error ||
             "حدث خطأ ما"
         )
-        return Promise.reject(error.response?.data?.error)
+        return Promise.reject(error)
     }
 )
 

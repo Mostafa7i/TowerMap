@@ -70,14 +70,15 @@ export default function LoginPage() {
         router.push("/dashboard");
       }, 800);
     } catch (error) {
-      console.error(error);
       const details = error.response?.data?.details;
       if (Array.isArray(details)) {
         details.forEach((err) => NotifiyErorr(err));
-        console.log(error.response?.data?.message);
       }
-      setError("حدث خطأ أثناء تسجيل الدخول");
-      NotifiyInfo("حدث خطأ، حاول مرة أخرى");
+      
+      // Capture specific backend error text (like wrong password) or fallback
+      const backendError = error.response?.data?.message || error.response?.data?.error;
+      setError(backendError || "حدث خطأ أثناء تسجيل الدخول");
+      
     } finally {
       setIsLoading(false);
     }

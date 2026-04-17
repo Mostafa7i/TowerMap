@@ -103,7 +103,7 @@ export default function Home() {
         </div>
         <div className="inline-block -mt-20 md:-mt-32 mb-12">
           <span className="bg-violet-500/20 border border-violet-500/30 text-violet-200 px-6 py-2 rounded-full text-sm font-medium backdrop-blur-sm">
-            نظام المراقبة الذكي الجديد 2025 ✨
+            نظام المراقبة الذكي الجديد 2026 ✨
           </span>
         </div>
 
