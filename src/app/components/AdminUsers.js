@@ -104,13 +104,27 @@ function UserCard({ u, onVerify, onDelete, loading }) {
         <div className="flex items-center gap-2 text-slate-400 text-xs">
           <CalendarDays className="w-3.5 h-3.5 shrink-0" />
           <span>
-            {new Date(u.createdAt).toLocaleDateString("ar-EG", {
+            انضمام: {new Date(u.createdAt).toLocaleDateString("ar-EG", {
               year: "numeric",
               month: "short",
               day: "numeric",
             })}
           </span>
         </div>
+        {u.lastActive && (
+          <div className="flex items-center gap-2 text-slate-400 text-xs" title="آخر ظهور / نشاط">
+            <Clock className="w-3.5 h-3.5 shrink-0" />
+            <span className="text-indigo-400/80">
+              نشط: {new Date(u.lastActive).toLocaleString("ar-EG", {
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+                hour: "2-digit",
+                minute: "2-digit"
+              })}
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Actions - لا تظهر لـ مستخدم عادي */}
