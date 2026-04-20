@@ -2,7 +2,7 @@
 "use client";
 import React, { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { User2, LayoutDashboard, Loader2 } from "lucide-react";
+import { User2, LayoutDashboard } from "lucide-react";
 import { useAuth } from "@/app/context/AuthContext";
 import Sidebar from "@/app/components/Sidebar";
 import Reports from "@/app/components/Reports";
@@ -12,6 +12,7 @@ import CreateTower from "@/app/components/CreateTower";
 import AdminUsers from "@/app/components/AdminUsers";
 import UserDashboard from "@/app/components/UserDashboard";
 import PendingVerification from "@/app/components/PendingVerification";
+import SplashScreen from "@/app/components/SplashScreen";
 import API from "../services/api";
 import SimulatorPage from "../components/Simulator";
 import TowerIssueHistory from "../components/TowerIssueHistory";
@@ -81,15 +82,13 @@ function DashboardInner() {
     }
   }, [loading, user, router]);
 
-  // ── شاشة التحميل ──
+  // ── شاشة التحميل الموحدة ──
   if (loading || !user) {
     return (
-      <div className="flex h-screen w-full items-center justify-center bg-gray-50">
-        <Loader2 className="h-10 w-10 animate-spin text-blue-600" />
-        <span className="mr-3 text-lg font-medium text-gray-600">
-          {loading ? "جاري تحميل البيانات..." : "يتم تحويلك لصفحة تسجيل الدخول..."}
-        </span>
-      </div>
+      <SplashScreen
+        message={loading ? "جاري تحميل بياناتك..." : "يتم تحويلك لتسجيل الدخول..."}
+        sub={loading ? "LOADING YOUR DATA" : "REDIRECTING TO LOGIN"}
+      />
     );
   }
 
@@ -184,11 +183,7 @@ function DashboardInner() {
 
 export default function DashboardPage() {
   return (
-    <Suspense fallback={
-      <div className="flex h-screen w-full items-center justify-center bg-slate-950">
-        <Loader2 className="h-10 w-10 animate-spin text-indigo-400" />
-      </div>
-    }>
+    <Suspense fallback={<SplashScreen message="جاري تحميل لوحة التحكم..." sub="LOADING DASHBOARD" />}>
       <DashboardInner />
     </Suspense>
   );

@@ -1,6 +1,6 @@
 "use client";
 
-import { Building, Key, Mail, PhoneCall, UserPen } from "lucide-react";
+import { Building, Key, Loader2, Mail, PhoneCall, UserPen } from "lucide-react";
 import Link from "next/link";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
@@ -97,7 +97,13 @@ export default function RegisterPage() {
   };
 
   // لو بننقل للداشبورد، أظهر الـ Splash
-  if (isNavigating) return <SplashScreen />;
+  if (isNavigating)
+    return (
+      <SplashScreen
+        message="جاري إنشاء حسابك..."
+        sub="SETTING UP YOUR ACCOUNT"
+      />
+    );
 
   return (
     <div className="relative flex min-h-screen items-center justify-center px-2 py-6 overflow-hidden bg-[#060913]">
@@ -192,7 +198,7 @@ export default function RegisterPage() {
                         <ErrorMessage
                           name="fullName"
                           component="div"
-                          className="text-sm text-red-600"
+                          className="text-xs text-red-400 mt-1 flex items-center gap-1"
                         />
                       </div>
 
@@ -217,7 +223,7 @@ export default function RegisterPage() {
                         <ErrorMessage
                           name="phone"
                           component="div"
-                          className="text-sm text-red-600"
+                          className="text-xs text-red-400 mt-1"
                         />
                       </div>
 
@@ -244,7 +250,7 @@ export default function RegisterPage() {
                         <ErrorMessage
                           name="section"
                           component="div"
-                          className="text-sm text-red-600"
+                          className="text-xs text-red-400 mt-1"
                         />
                       </div>
                     </div>
@@ -273,7 +279,7 @@ export default function RegisterPage() {
                         <ErrorMessage
                           name="email"
                           component="div"
-                          className="text-sm text-red-600"
+                          className="text-xs text-red-400 mt-1"
                         />
                       </div>
 
@@ -297,7 +303,7 @@ export default function RegisterPage() {
                         <ErrorMessage
                           name="password"
                           component="div"
-                          className="text-sm text-red-600"
+                          className="text-xs text-red-400 mt-1"
                         />
                       </div>
 
@@ -321,7 +327,7 @@ export default function RegisterPage() {
                         <ErrorMessage
                           name="confirmPassword"
                           component="div"
-                          className="text-sm text-red-600"
+                          className="text-xs text-red-400 mt-1"
                         />
                       </div>
                     </div>
@@ -343,13 +349,18 @@ export default function RegisterPage() {
                 <button
                   type="submit"
                   disabled={isSubmitting || isLoading}
-                  className="w-full rounded-xl bg-linear-to-r from-indigo-600 to-purple-600 px-6 py-3 text-lg font-bold text-white hover:from-indigo-700 hover:to-purple-700 transition-all disabled:opacity-60"
+                  className="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 px-6 py-3 text-base font-bold text-white hover:from-indigo-500 hover:to-purple-500 transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed shadow-lg shadow-indigo-500/20"
                 >
-                  {isLoading
-                    ? "جاري الإنشاء..."
-                    : step === totalSteps - 1
-                      ? "إنشاء الحساب"
-                      : "التالي"}
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      <span>جاري الإنشاء...</span>
+                    </>
+                  ) : step === totalSteps - 1 ? (
+                    "إنشاء الحساب"
+                  ) : (
+                    "التالي →"
+                  )}
                 </button>
               </div>
 
