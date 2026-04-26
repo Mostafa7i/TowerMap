@@ -317,11 +317,12 @@ export default function TowerMap({ towers = [], towerAiResults = {} }) {
       <div style={{ position: "relative", height: "100%", width: "100%", fontFamily: "'Tajawal', sans-serif" }}>
 
         {/* ── Top Control Bar ── */}
-        <div style={{
-          position: "absolute", top: 12, left: "50%", transform: "translateX(-50%)",
-          zIndex: 1000, display: "flex", alignItems: "center", gap: 8,
-          background: "rgba(10,22,40,0.95)", border: "1px solid #1e293b",
-          borderRadius: 14, padding: "8px 12px", backdropFilter: "blur(12px)",
+        <div
+          style={{
+            position: "absolute", top: 12, left: "50%", transform: "translateX(-50%)",
+            zIndex: 1000, display: "flex", alignItems: "center", gap: 8,
+            background: "rgba(10,22,40,0.95)", border: "1px solid #1e293b",
+            borderRadius: 14, padding: "8px 12px", backdropFilter: "blur(12px)",
           boxShadow: "0 4px 24px rgba(0,0,0,0.5)",
         }}>
           {/* Search */}
@@ -329,29 +330,16 @@ export default function TowerMap({ towers = [], towerAiResults = {} }) {
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="ابحث عن برج..."
-            style={{
-              background: "#0f172a", border: "1px solid #1e293b", borderRadius: 8,
-              padding: "6px 12px", color: "#e2e8f0", fontSize: 12,
-              fontFamily: "'Tajawal', sans-serif", outline: "none", width: 160,
-              direction: "rtl",
-            }}
+            className="bg-slate-900 border border-slate-700 rounded-lg p-2 text-slate-200 text-sm font-medium focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
           />
 
           {/* Divider */}
-          <div style={{ width: 1, height: 20, background: "#1e293b" }} />
+          <div className="w-1 h-10 bg-slate-700" />
 
           {/* Status filters */}
           {["all", "safe", "warning", "critical", "danger"].map(f => (
             <button key={f} onClick={() => setFilter(f)}
-              className="map-panel-btn"
-              style={{
-                background: filter === f ? "rgba(14,165,233,0.15)" : "transparent",
-                border: `1px solid ${filter === f ? "#0ea5e940" : "transparent"}`,
-                borderRadius: 8, padding: "4px 10px", cursor: "pointer",
-                color: filter === f ? "#38bdf8" : "#475569",
-                fontSize: 11, fontFamily: "'Tajawal', sans-serif", fontWeight: 700,
-                transition: "all 0.2s",
-              }}>
+              className="map-panel-btn bg-slate-900 p-1 rounded-lg text-slate-200 text-sm font-medium focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
               {f === "all" ? `الكل (${towers.length})` : f === "safe" ? `🟢 ${counts.safe}` : f === "warning" ? `🟡 ${counts.warning}` : f === "critical" ? `🟠 ${counts.critical}` : `🔴 ${counts.danger}`}
             </button>
           ))}

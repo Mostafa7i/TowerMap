@@ -25,6 +25,11 @@ export default function Home() {
       role: "Front-End",
       image: "/pic/ahmed_mohamed.jpeg"
     },
+        {
+      name: "احمد محمد عبدالعزيز",
+      role: "Back-End",
+      image: "/pic/AhmedMohamedAbdelaziz.jpg",
+    },
     {
       name: "نسرين ابراهيم",
       role: "Front-End",
@@ -76,6 +81,18 @@ export default function Home() {
       role: "Front-End",
       image: "/pic/shimaa.jpeg",
     },
+
+    {
+      name: "ايمان شوكت",
+      role: "Front-End",
+      image: "/pic/ImanShawkat.jpeg",
+    },
+    {
+      name: "ليلي عبدالمنعم",
+      role: "Front-End",
+      image: "/pic/LailaAbdelmonem.jpg",
+    },
+
   ];
   return (
     <div className="relative overflow-hidden bg-slate-950" dir="rtl">

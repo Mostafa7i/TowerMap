@@ -487,12 +487,12 @@ export default function Overview({ user, towers, onDelete, analyzeTowerId }) {
       </div>
 
       {/* Map */}
-      <div className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 border border-slate-700/50 rounded-2xl p-6 backdrop-blur-sm relative z-10">
+      <div className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 border border-slate-700/50 rounded-2xl p-2 backdrop-blur-sm relative z-10">
         <h2 className="text-xl font-bold text-white flex items-center gap-2 mb-5">
           <MapPin size={22} className="text-indigo-400" />
           خريطة الأبراج
         </h2>
-        <div className="h-96 rounded-xl overflow-hidden border border-slate-700/50 shadow-2xl shadow-slate-900/50">
+        <div className="h-[500px] rounded-xl overflow-hidden border border-slate-700/50 shadow-2xl shadow-slate-900/50">
           <TowerMap towers={filteredTowers} towerAiResults={towerAiResults} />
         </div>
       </div>
