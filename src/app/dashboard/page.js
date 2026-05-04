@@ -16,6 +16,7 @@ import SplashScreen from "@/app/components/SplashScreen";
 import API from "../services/api";
 import SimulatorPage from "../components/Simulator";
 import TowerIssueHistory from "../components/TowerIssueHistory";
+import ComplaintsManager from "../components/ComplaintsManager";
 
 const NORMAL_USER_SECTION = "مستخدم عادي";
 
@@ -26,6 +27,7 @@ function DashboardInner() {
   const { user, loading } = useAuth();
   const [towers, setTowers] = useState([]);
   const [activeView, setActiveView] = useState("overview");
+  const [complaintPrefill, setComplaintPrefill] = useState(null);
 
   // tower pre-selected from notification click
   const analyzeTowerId = searchParams?.get("analyzeTower") || null;
@@ -103,6 +105,27 @@ function DashboardInner() {
   }
 
   // ─── لوحة تحكم عادية (مهندسون + أدمن) ───
+  const handleOpenTicketFromComplaint = (complaint) => {
+    // Map complaint fields → issue prefill
+    setComplaintPrefill({
+      complaintTitle: complaint.title,
+      title: `[شكوى] ${complaint.title}`,
+      description: [
+        complaint.description,
+        complaint.problemType ? `\n\nنوع المشكلة: ${complaint.problemType}` : "",
+        complaint.towerName ? `\nاسم البرج: ${complaint.towerName}` : "",
+        (complaint.userLocation?.address || complaint.userLocation?.lat)
+          ? `\nموقع المستخدم: ${complaint.userLocation.address || `${complaint.userLocation.lat}, ${complaint.userLocation.lng}`}`
+          : "",
+        `\n\nمقدم الشكوى: ${complaint.userName}`,
+      ].join(""),
+      issueType: "warning",
+      priority: "high",
+      towerId: "",
+    });
+    setActiveView("issues");
+  };
+
   const renderActiveView = () => {
     switch (activeView) {
       case "createTower":
@@ -115,8 +138,16 @@ function DashboardInner() {
         return <Settings towers={towers} />;
       case "adminUsers":
         return <AdminUsers />;
+      case "complaints":
+        return <ComplaintsManager onOpenTicket={handleOpenTicketFromComplaint} />;
       case "issues":
-        return <TowerIssueHistory user={user} />;
+        return (
+          <TowerIssueHistory
+            user={user}
+            prefillData={complaintPrefill}
+            onPrefillConsumed={() => setComplaintPrefill(null)}
+          />
+        );
       case "overview":
       default:
         return <Overview user={user} towers={towers} stats={stats} analyzeTowerId={analyzeTowerId} />;

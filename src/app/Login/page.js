@@ -1,5 +1,5 @@
 "use client";
-import { Key, Mail, Loader2, AlertCircle, CheckCircle2, LogIn } from "lucide-react";
+import { Key, Mail, Loader2, AlertCircle, CheckCircle2, LogIn, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import React, { useState, useEffect, useRef } from "react";
 import { NotifiySuccess } from "../components/Notify";
@@ -31,13 +31,14 @@ function mapError(raw) {
 // ─── مؤشر قوة كلمة المرور بسيط داخل الزر (Progress Line) ─────────────
 const STEPS = [
   { key: "connecting", label: "جاري الاتصال...", pct: 20 },
-  { key: "auth",       label: "جاري التحقق...", pct: 55 },
-  { key: "loading",    label: "تجهيز بياناتك...", pct: 80 },
-  { key: "done",       label: "تم بنجاح! ✓",    pct: 100 },
+  { key: "auth", label: "جاري التحقق...", pct: 55 },
+  { key: "loading", label: "تجهيز بياناتك...", pct: 80 },
+  { key: "done", label: "تم بنجاح! ✓", pct: 100 },
 ];
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({ email: "", password: "" });
+  const [showPassword, setShowPassword] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({ email: "", password: "" });
   const [serverError, setServerError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -252,14 +253,14 @@ export default function LoginPage() {
             <div className="relative">
               <input
                 id="password"
-                type="password"
+                type={showPassword ? "text" : "password"}
                 name="password"
                 placeholder="••••••••"
                 value={formData.password}
                 onChange={handleChange}
                 disabled={isLoading}
                 autoComplete="current-password"
-                className={`w-full rounded-xl border px-4 py-3 pr-11 text-right outline-none transition-all duration-200
+                className={`w-full rounded-xl border px-4 py-3 pr-11 pl-11 text-right outline-none transition-all duration-200
                   bg-slate-800/60 text-white placeholder-slate-500
                   ${fieldErrors.password
                     ? "border-red-500/60 focus:border-red-400 focus:ring-2 focus:ring-red-400/20"
@@ -267,6 +268,18 @@ export default function LoginPage() {
                   } disabled:opacity-50`}
               />
               <Key className="absolute right-3 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400 pointer-events-none" />
+              <button
+                type="button"
+                onClick={() => setShowPassword((v) => !v)}
+                disabled={isLoading}
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-indigo-400 transition-colors duration-200 disabled:opacity-40"
+                tabIndex={-1}
+                aria-label={showPassword ? "إخفاء كلمة المرور" : "إظهار كلمة المرور"}
+              >
+                {showPassword
+                  ? <EyeOff className="h-5 w-5" />
+                  : <Eye className="h-5 w-5" />}
+              </button>
             </div>
             <AnimatePresence>
               {fieldErrors.password && (

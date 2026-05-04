@@ -5,7 +5,7 @@ import {
   AlertTriangle, CheckCircle2, Clock, Plus, MessageSquare,
   ChevronDown, ChevronUp, Trash2, RefreshCw, Activity,
   AlertCircle, Zap, FileText, User, Calendar, Tag,
-  BookOpen, Lock, Unlock, ArrowRight
+  BookOpen, Lock, Unlock, ArrowRight, MessageSquareWarning
 } from "lucide-react";
 
 // ─── Status Config ─────────────────────────────────────────────────────────────
@@ -54,9 +54,13 @@ function timeAgo(dateStr) {
 }
 
 // ─── Create Issue Modal ────────────────────────────────────────────────────────
-function CreateIssueModal({ towers, onClose, onCreated }) {
+function CreateIssueModal({ towers, onClose, onCreated, prefillData }) {
   const [form, setForm] = useState({
-    towerId: "", issueType: "warning", title: "", description: "", priority: "medium",
+    towerId: prefillData?.towerId || "",
+    issueType: prefillData?.issueType || "warning",
+    title: prefillData?.title || "",
+    description: prefillData?.description || "",
+    priority: prefillData?.priority || "medium",
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -85,14 +89,27 @@ function CreateIssueModal({ towers, onClose, onCreated }) {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4" onClick={onClose}>
       <div className="bg-slate-900 border border-slate-700 rounded-2xl p-6 w-full max-w-lg shadow-2xl" onClick={e => e.stopPropagation()}>
         <div className="flex items-center gap-3 mb-6">
-          <div className="w-10 h-10 bg-indigo-500/20 border border-indigo-500/30 rounded-xl flex items-center justify-center">
-            <Plus className="text-indigo-400" size={20} />
+          <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${prefillData ? 'bg-purple-500/20 border border-purple-500/30' : 'bg-indigo-500/20 border border-indigo-500/30'}`}>
+            {prefillData ? <MessageSquareWarning className="text-purple-400" size={20} /> : <Plus className="text-indigo-400" size={20} />}
           </div>
           <div>
             <h2 className="text-lg font-bold text-white">فتح تذكرة جديدة</h2>
-            <p className="text-xs text-slate-400 font-mono">NEW MAINTENANCE TICKET</p>
+            {prefillData ? (
+              <p className="text-xs text-purple-400 font-mono">مستوردة من شكوى مستخدم</p>
+            ) : (
+              <p className="text-xs text-slate-400 font-mono">NEW MAINTENANCE TICKET</p>
+            )}
           </div>
         </div>
+
+        {prefillData && (
+          <div className="mb-4 p-3 bg-purple-500/10 border border-purple-500/20 rounded-xl">
+            <p className="text-xs text-purple-300 font-semibold flex items-center gap-1.5">
+              <MessageSquareWarning size={13} /> تم استيراد البيانات من شكوى: <span className="text-white">{prefillData.complaintTitle}</span>
+            </p>
+            <p className="text-[10px] text-slate-400 mt-1">يمكنك تعديل أي حقل قبل فتح التذكرة</p>
+          </div>
+        )}
 
         {error && (
           <div className="mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-sm text-red-400">{error}</div>
@@ -405,13 +422,12 @@ function IssueCard({ issue, onUpdate, onDelete, isAdmin }) {
                     key={t.value}
                     onClick={() => handleStatusChange(t.value)}
                     disabled={updatingStatus}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold border transition-all disabled:opacity-50 ${
-                      t.value === 'resolved' || t.value === 'closed'
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold border transition-all disabled:opacity-50 ${t.value === 'resolved' || t.value === 'closed'
                         ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20'
                         : t.value === 'in_progress'
-                        ? 'bg-orange-500/10 border-orange-500/30 text-orange-400 hover:bg-orange-500/20'
-                        : 'bg-slate-700/30 border-slate-600/50 text-slate-400 hover:bg-slate-700/50'
-                    }`}
+                          ? 'bg-orange-500/10 border-orange-500/30 text-orange-400 hover:bg-orange-500/20'
+                          : 'bg-slate-700/30 border-slate-600/50 text-slate-400 hover:bg-slate-700/50'
+                      }`}
                   >
                     {updatingStatus ? <RefreshCw size={11} className="animate-spin" /> : <TIcon size={11} />}
                     {t.label}
@@ -461,12 +477,21 @@ function StatsBar({ stats }) {
 }
 
 // ─── MAIN COMPONENT ───────────────────────────────────────────────────────────
-export default function TowerIssueHistory({ user }) {
+export default function TowerIssueHistory({ user, prefillData, onPrefillConsumed }) {
   const [issues, setIssues] = useState([]);
   const [towers, setTowers] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(!!prefillData);
+  const [activePrefill, setActivePrefill] = useState(prefillData || null);
   const [stats, setStats] = useState({ open: 0, in_progress: 0, resolved: 0, closed: 0, total: 0 });
+
+  // When prefillData changes from parent (new complaint opened)
+  useEffect(() => {
+    if (prefillData) {
+      setActivePrefill(prefillData);
+      setShowCreateModal(true);
+    }
+  }, [prefillData]);
 
   // Filters
   const [filterStatus, setFilterStatus] = useState("all");
@@ -528,6 +553,12 @@ export default function TowerIssueHistory({ user }) {
     setStats(s => ({ ...s, open: s.open + 1, total: s.total + 1 }));
   }, []);
 
+  const handleCloseModal = useCallback(() => {
+    setShowCreateModal(false);
+    setActivePrefill(null);
+    if (onPrefillConsumed) onPrefillConsumed();
+  }, [onPrefillConsumed]);
+
   return (
     <div className="min-h-screen text-slate-100 space-y-6" dir="rtl">
       <style>{`
@@ -553,7 +584,7 @@ export default function TowerIssueHistory({ user }) {
           </div>
         </div>
         <button
-          onClick={() => setShowCreateModal(true)}
+          onClick={() => { setActivePrefill(null); setShowCreateModal(true); }}
           className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white rounded-xl font-bold text-sm shadow-lg shadow-indigo-500/20 transition-all active:scale-95"
         >
           <Plus size={16} /> فتح تذكرة جديدة
@@ -580,11 +611,10 @@ export default function TowerIssueHistory({ user }) {
               <button
                 key={f.v}
                 onClick={() => setFilterStatus(f.v)}
-                className={`px-2.5 py-1 rounded-lg text-[10px] font-mono font-bold transition-all border ${
-                  filterStatus === f.v
+                className={`px-2.5 py-1 rounded-lg text-[10px] font-mono font-bold transition-all border ${filterStatus === f.v
                     ? "bg-indigo-500/20 border-indigo-500/40 text-indigo-400"
                     : "bg-slate-700/30 border-slate-700/30 text-slate-500 hover:text-slate-300"
-                }`}
+                  }`}
               >
                 {f.l}
               </button>
@@ -662,8 +692,9 @@ export default function TowerIssueHistory({ user }) {
       {showCreateModal && (
         <CreateIssueModal
           towers={towers}
-          onClose={() => setShowCreateModal(false)}
+          onClose={handleCloseModal}
           onCreated={handleCreated}
+          prefillData={activePrefill}
         />
       )}
     </div>

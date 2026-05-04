@@ -16,16 +16,18 @@ import {
   Clock,
   Users,
   Ticket,
+  MessageSquareWarning,
 } from "lucide-react";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useAuth } from "@/app/context/AuthContext";
 import { useRouter } from "next/navigation";
+import API from "@/app/services/api";
 
-const NavLink = ({ icon, children, onClick, isActive }) => (
+const NavLink = ({ icon, children, onClick, isActive, badge }) => (
   <a
     className={`flex items-center p-3 my-1 rounded-lg transition-all duration-200 ${isActive
-        ? "bg-indigo-600 text-white shadow-lg shadow-indigo-500/20"
-        : "text-gray-300 hover:bg-gray-700/60 hover:text-white"
+      ? "bg-indigo-600 text-white shadow-lg shadow-indigo-500/20"
+      : "text-gray-300 hover:bg-gray-700/60 hover:text-white"
       }`}
     href="#"
     onClick={(e) => {
@@ -34,12 +36,18 @@ const NavLink = ({ icon, children, onClick, isActive }) => (
     }}
   >
     <span className={`${isActive ? "text-white" : "text-gray-400"}`}>{icon}</span>
-    <span className="mx-4 font-medium">{children}</span>
+    <span className="mx-4 font-medium flex-1">{children}</span>
+    {badge > 0 && (
+      <span className="bg-purple-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center">
+        {badge}
+      </span>
+    )}
   </a>
 );
 
 export default function Sidebar({ activeView, setActiveView, toggle, isOpen, closeSidebar, towers = [], isAdmin = false }) {
   const [alertsVisible, setAlertsVisible] = useState(true);
+  const [unreadComplaints, setUnreadComplaints] = useState(0);
   const { logOut, user } = useAuth();
   const router = useRouter();
 
@@ -47,6 +55,22 @@ export default function Sidebar({ activeView, setActiveView, toggle, isOpen, clo
     setActiveView(view);
     closeSidebar();
   };
+
+  // Fetch unread complaints count for badge
+  useEffect(() => {
+    const fetchUnread = async () => {
+      try {
+        const res = await API.get("/complaints/all");
+        const list = res.data.complaints || [];
+        setUnreadComplaints(list.filter((c) => !c.isReadByAdmin).length);
+      } catch {
+        /* silent */
+      }
+    };
+    fetchUnread();
+    const interval = setInterval(fetchUnread, 30000);
+    return () => clearInterval(interval);
+  }, []);
 
   const goToAnalysis = (towerId) => {
     closeSidebar();
@@ -58,19 +82,19 @@ export default function Sidebar({ activeView, setActiveView, toggle, isOpen, clo
     return towers
       .filter((t) => {
         const status = (t?.status || "").toLowerCase();
-        const latency    = t.lastMeasurement?.latency    || 0;
+        const latency = t.lastMeasurement?.latency || 0;
         const packetLoss = t.lastMeasurement?.packetLoss || 0;
 
-        const isBadStatus    = ["danger", "critical", "warning"].includes(status);
-        const isLatencyBad   = latency    >= 80;   // نفس منطق الـ Navbar
-        const isPacketBad    = packetLoss >= 5;
+        const isBadStatus = ["danger", "critical", "warning"].includes(status);
+        const isLatencyBad = latency >= 80;   // نفس منطق الـ Navbar
+        const isPacketBad = packetLoss >= 5;
 
         return isBadStatus || isLatencyBad || isPacketBad;
       })
       .slice(0, 5)
       .map((t) => {
         const status = (t?.status || "").toLowerCase();
-        const latency    = t.lastMeasurement?.latency    || 0;
+        const latency = t.lastMeasurement?.latency || 0;
         const packetLoss = t.lastMeasurement?.packetLoss || 0;
 
         let alertType = "warning";
@@ -81,11 +105,11 @@ export default function Sidebar({ activeView, setActiveView, toggle, isOpen, clo
         }
 
         return {
-          id:     t._id,
-          name:   t.TowerName,
-          ip:     t.ip_address,
+          id: t._id,
+          name: t.TowerName,
+          ip: t.ip_address,
           status: alertType,
-          time:   t.updatedAt
+          time: t.updatedAt
             ? new Date(t.updatedAt).toLocaleTimeString("ar-EG", { hour: "2-digit", minute: "2-digit" })
             : "—",
         };
@@ -160,7 +184,7 @@ export default function Sidebar({ activeView, setActiveView, toggle, isOpen, clo
           >
             التقارير
           </NavLink>
-    
+
           <NavLink
             icon={<Ticket className="w-5 h-5" />}
             onClick={() => handleNavigation("issues")}
@@ -168,7 +192,17 @@ export default function Sidebar({ activeView, setActiveView, toggle, isOpen, clo
           >
             سجل المشاكل والتذاكر
           </NavLink>
-                <NavLink
+
+          <NavLink
+            icon={<MessageSquareWarning className="w-5 h-5" />}
+            onClick={() => handleNavigation("complaints")}
+            isActive={activeView === "complaints"}
+            badge={unreadComplaints}
+          >
+            الشكاوى
+          </NavLink>
+
+          <NavLink
             icon={<Settings className="w-5 h-5" />}
             onClick={() => handleNavigation("settings")}
             isActive={activeView === "settings"}
@@ -217,39 +251,35 @@ export default function Sidebar({ activeView, setActiveView, toggle, isOpen, clo
                   <div
                     key={alert.id}
                     onClick={() => goToAnalysis(alert.id)}
-                    className={`flex items-start gap-2 rounded-lg px-3 py-2 border cursor-pointer hover:opacity-80 transition-opacity ${
-                      alert.status === "danger"
+                    className={`flex items-start gap-2 rounded-lg px-3 py-2 border cursor-pointer hover:opacity-80 transition-opacity ${alert.status === "danger"
                         ? "bg-red-500/5 border-red-500/20"
                         : alert.status === "critical"
-                        ? "bg-orange-500/5 border-orange-500/20"
-                        : "bg-yellow-500/5 border-yellow-500/20"
-                    }`}
+                          ? "bg-orange-500/5 border-orange-500/20"
+                          : "bg-yellow-500/5 border-yellow-500/20"
+                      }`}
                   >
                     <span
-                      className={`w-1.5 h-1.5 rounded-full mt-1.5 shrink-0 animate-pulse ${
-                        alert.status === "danger" 
-                          ? "bg-red-400" 
-                          : alert.status === "critical" 
-                          ? "bg-orange-400" 
-                          : "bg-yellow-400"
-                      }`}
+                      className={`w-1.5 h-1.5 rounded-full mt-1.5 shrink-0 animate-pulse ${alert.status === "danger"
+                          ? "bg-red-400"
+                          : alert.status === "critical"
+                            ? "bg-orange-400"
+                            : "bg-yellow-400"
+                        }`}
                     />
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center justify-between gap-1">
-                        <p className={`text-xs font-semibold truncate ${
-                          alert.status === "danger" 
-                            ? "text-red-300" 
-                            : alert.status === "critical" 
-                            ? "text-orange-300" 
-                            : "text-yellow-300"
-                        }`}>{alert.name}</p>
-                        <span className={`text-[9px] font-bold px-1 py-0.5 rounded shrink-0 ${
-                          alert.status === "danger"
+                        <p className={`text-xs font-semibold truncate ${alert.status === "danger"
+                            ? "text-red-300"
+                            : alert.status === "critical"
+                              ? "text-orange-300"
+                              : "text-yellow-300"
+                          }`}>{alert.name}</p>
+                        <span className={`text-[9px] font-bold px-1 py-0.5 rounded shrink-0 ${alert.status === "danger"
                             ? "bg-red-500/20 text-red-400"
                             : alert.status === "critical"
-                            ? "bg-orange-500/20 text-orange-400"
-                            : "bg-yellow-500/20 text-yellow-400"
-                        }`}>
+                              ? "bg-orange-500/20 text-orange-400"
+                              : "bg-yellow-500/20 text-yellow-400"
+                          }`}>
                           {alert.status === "danger" ? "خطر" : alert.status === "critical" ? "حرج" : "تحذير"}
                         </span>
                       </div>
