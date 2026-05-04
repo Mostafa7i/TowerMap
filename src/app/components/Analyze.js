@@ -9,7 +9,8 @@ import {
   Cell, PieChart, Pie
 } from "recharts";
 import {
-  AlertCircle, TrendingUp, Zap, Activity, Clock, Info, FileText
+  AlertCircle, TrendingUp, Zap, Activity, Clock, Info, FileText,
+  Brain, ChevronRight, ShieldAlert, ShieldCheck, Cpu, Wrench, Shield
 } from "lucide-react";
 import { getRecommendations } from "./GetRecommendations";
 
@@ -181,6 +182,299 @@ function EnsembleBar({ scores = [] }) {
           </div>
         );
       })}
+    </div>
+  );
+}
+
+// ─── Typewriter Hook ──────────────────────────────────────────────────────────
+function useTypewriter(text, speed = 28, startDelay = 0) {
+  const [displayed, setDisplayed] = useState("");
+  const [done, setDone] = useState(false);
+  useEffect(() => {
+    setDisplayed("");
+    setDone(false);
+    let i = 0;
+    const timeout = setTimeout(() => {
+      const iv = setInterval(() => {
+        i++;
+        setDisplayed(text.slice(0, i));
+        if (i >= text.length) { clearInterval(iv); setDone(true); }
+      }, speed);
+      return () => clearInterval(iv);
+    }, startDelay);
+    return () => clearTimeout(timeout);
+  }, [text, speed, startDelay]);
+  return { displayed, done };
+}
+
+// ─── Priority Config ───────────────────────────────────────────────────────────
+const PRIORITY_CFG = {
+  critical: {
+    label: "أولوية قصوى",
+    labelEn: "CRITICAL",
+    border: "border-red-500/40",
+    bg: "bg-red-500/8",
+    glow: "shadow-red-500/10",
+    badgeBg: "bg-red-500/20",
+    badgeText: "text-red-400",
+    badgeBorder: "border-red-500/30",
+    dot: "bg-red-400",
+    iconColor: "text-red-400",
+    barColor: "bg-red-500",
+    Icon: ShieldAlert,
+    scanColor: "#ef4444",
+  },
+  warning: {
+    label: "تحتاج متابعة",
+    labelEn: "WARNING",
+    border: "border-amber-500/40",
+    bg: "bg-amber-500/8",
+    glow: "shadow-amber-500/10",
+    badgeBg: "bg-amber-500/20",
+    badgeText: "text-amber-400",
+    badgeBorder: "border-amber-500/30",
+    dot: "bg-amber-400",
+    iconColor: "text-amber-400",
+    barColor: "bg-amber-500",
+    Icon: Shield,
+    scanColor: "#f59e0b",
+  },
+  success: {
+    label: "حالة مثلى",
+    labelEn: "OPTIMAL",
+    border: "border-emerald-500/40",
+    bg: "bg-emerald-500/8",
+    glow: "shadow-emerald-500/10",
+    badgeBg: "bg-emerald-500/20",
+    badgeText: "text-emerald-400",
+    badgeBorder: "border-emerald-500/30",
+    dot: "bg-emerald-400",
+    iconColor: "text-emerald-400",
+    barColor: "bg-emerald-500",
+    Icon: ShieldCheck,
+    scanColor: "#10b981",
+  },
+};
+
+// ─── Single Rec Card ──────────────────────────────────────────────────────────
+function RecCard({ rec, index, visible }) {
+  const cfg = PRIORITY_CFG[rec.type] || PRIORITY_CFG.warning;
+  const CFGIcon = cfg.Icon;
+  const { displayed, done } = useTypewriter(
+    rec.text,
+    18,
+    visible ? index * 320 + 200 : 99999
+  );
+
+  const actions = rec.action
+    ? Array.isArray(rec.action) ? rec.action : [rec.action]
+    : [];
+
+  return (
+    <div
+      className={`relative overflow-hidden rounded-2xl border ${cfg.border} ${cfg.bg} shadow-lg ${cfg.glow}
+        transition-all duration-500
+        ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
+      style={{ transitionDelay: `${index * 120}ms` }}
+    >
+      {/* animated scan line */}
+      <div
+        className="absolute top-0 left-0 w-full h-px opacity-60"
+        style={{
+          background: `linear-gradient(90deg, transparent, ${cfg.scanColor}, transparent)`,
+          animation: `scanline ${2 + index * 0.4}s linear infinite`,
+        }}
+      />
+
+      <div className="p-5">
+        {/* Header Row */}
+        <div className="flex items-start gap-4">
+          {/* Icon */}
+          <div className={`shrink-0 w-10 h-10 rounded-xl flex items-center justify-center ${cfg.badgeBg} border ${cfg.badgeBorder}`}>
+            <CFGIcon className={`w-5 h-5 ${cfg.iconColor}`} />
+          </div>
+
+          <div className="flex-1 min-w-0">
+            {/* Priority Badge */}
+            <div className="flex items-center gap-2 mb-2 flex-wrap">
+              <span className={`inline-flex items-center gap-1.5 text-[9px] font-mono font-bold px-2 py-0.5 rounded-md border ${cfg.badgeBg} ${cfg.badgeText} ${cfg.badgeBorder}`}>
+                <span className={`w-1.5 h-1.5 rounded-full ${cfg.dot} ${rec.type === 'critical' ? 'animate-pulse' : ''}`} />
+                {cfg.labelEn}
+              </span>
+              <span className="text-[9px] font-mono text-slate-600">REC-{String(index + 1).padStart(2, "0")}</span>
+              <span className="text-lg leading-none">{rec.icon}</span>
+            </div>
+
+            {/* Typewriter Text */}
+            <p className="text-sm font-semibold text-slate-200 leading-relaxed min-h-[40px]">
+              {displayed}
+              {!done && (
+                <span className="inline-block w-0.5 h-4 bg-cyan-400 ml-0.5 animate-pulse align-middle" />
+              )}
+            </p>
+          </div>
+        </div>
+
+        {/* Action Steps */}
+        {actions.length > 0 && done && (
+          <div className="mt-4 pt-3 border-t border-slate-700/40">
+            <p className="text-[9px] font-mono text-slate-500 uppercase tracking-widest mb-2 flex items-center gap-1">
+              <Wrench className="w-3 h-3" /> خطوات الإجراء
+            </p>
+            <ul className="space-y-1.5">
+              {actions.map((a, ai) => (
+                <li key={ai} className="flex items-start gap-2">
+                  <span className={`shrink-0 text-[9px] font-mono font-bold w-4 h-4 rounded flex items-center justify-center ${cfg.badgeBg} ${cfg.badgeText} mt-0.5`}>
+                    {ai + 1}
+                  </span>
+                  <span className="text-xs text-slate-400 leading-relaxed">{a}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {/* Bottom severity bar */}
+        <div className="mt-4 h-0.5 bg-slate-800 rounded-full overflow-hidden">
+          <div
+            className={`h-full ${cfg.barColor} rounded-full transition-all duration-1000 ease-out`}
+            style={{
+              width: done ? (rec.type === "critical" ? "100%" : rec.type === "warning" ? "65%" : "30%") : "0%",
+              boxShadow: `0 0 6px ${cfg.scanColor}80`,
+            }}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── AI Advisor Panel ─────────────────────────────────────────────────────────
+function AIAdvisorPanel({ recs, prob, isAnomaly, risk, networkStats }) {
+  const [visible, setVisible] = useState(false);
+  const [scanPhase, setScanPhase] = useState(0); // 0=scanning 1=analyzing 2=done
+  const panelRef = useRef(null);
+
+  const criticalCount = recs.filter(r => r.type === "critical").length;
+  const warningCount = recs.filter(r => r.type === "warning").length;
+  const okCount = recs.filter(r => r.type === "success").length;
+
+  const headerText =
+    criticalCount > 0
+      ? `تحذير! رصدت ${criticalCount} مشكلة حرجة تتطلب تدخلاً فورياً من الفريق التقني.`
+      : warningCount > 0
+        ? `يوجد ${warningCount} تنبيه يستوجب المراجعة لضمان استمرارية الخدمة.`
+        : "جميع المؤشرات ضمن النطاق المقبول — البرج يعمل بكفاءة ممتازة.";
+
+  const { displayed: headerDisplayed, done: headerDone } = useTypewriter(
+    headerText, 22, visible ? 400 : 99999
+  );
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) setVisible(true); },
+      { threshold: 0.1 }
+    );
+    if (panelRef.current) observer.observe(panelRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!visible) return;
+    const t1 = setTimeout(() => setScanPhase(1), 600);
+    const t2 = setTimeout(() => setScanPhase(2), 1400);
+    return () => { clearTimeout(t1); clearTimeout(t2); };
+  }, [visible]);
+
+  return (
+    <div ref={panelRef} className="mt-8 space-y-4">
+      <style>{`
+        @keyframes scanline {
+          0%   { transform: translateX(-100%); }
+          100% { transform: translateX(200%); }
+        }
+        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+        @keyframes slideUp {
+          from { opacity:0; transform:translateY(16px); }
+          to   { opacity:1; transform:translateY(0); }
+        }
+      `}</style>
+
+      {/* ── Header ── */}
+      <div className={`relative overflow-hidden rounded-2xl border border-indigo-500/30 bg-slate-900/60 backdrop-blur-sm shadow-xl shadow-indigo-500/5 transition-all duration-700 ${visible ? "opacity-100" : "opacity-0"}`}>
+        {/* animated top scan */}
+        <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-indigo-400 to-transparent opacity-70"
+          style={{ animation: "scanline 2.5s linear infinite" }} />
+
+        <div className="p-5">
+          <div className="flex items-center gap-4 mb-4">
+            {/* AI Brain icon with pulse ring */}
+            <div className="relative shrink-0">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-600 to-cyan-600 flex items-center justify-center shadow-lg shadow-indigo-500/30">
+                <Brain className="w-6 h-6 text-white" />
+              </div>
+              <span className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-cyan-400 border-2 border-slate-900 animate-pulse" />
+            </div>
+
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-1 flex-wrap">
+                <span className="text-xs font-mono font-bold text-indigo-400 tracking-widest">AI ADVISOR</span>
+                <span className="text-[9px] font-mono text-slate-600">v4.0 · NEURAL ENGINE</span>
+                {/* Live status */}
+                <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 ml-auto">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  <span className="text-[9px] font-mono text-emerald-400 font-bold">
+                    {scanPhase === 0 ? "SCANNING..." : scanPhase === 1 ? "ANALYZING..." : "REPORT READY"}
+                  </span>
+                </div>
+              </div>
+              <p className="text-base font-bold text-white leading-snug min-h-[24px]">
+                {headerDisplayed}
+                {!headerDone && <span className="inline-block w-0.5 h-4 bg-indigo-400 ml-0.5 animate-pulse align-middle" />}
+              </p>
+            </div>
+          </div>
+
+          {/* Summary Stats Row */}
+          <div className="grid grid-cols-4 gap-2 mt-2">
+            {[
+              { label: "حرجة", val: criticalCount, color: "text-red-400", bg: "bg-red-500/10", border: "border-red-500/20" },
+              { label: "تحذير", val: warningCount, color: "text-amber-400", bg: "bg-amber-500/10", border: "border-amber-500/20" },
+              { label: "مثلى", val: okCount, color: "text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/20" },
+              { label: "الخطر %", val: `${prob.toFixed(0)}%`, color: risk.label === "طبيعي" ? "text-emerald-400" : "text-red-400", bg: "bg-slate-800/60", border: "border-slate-700/50" },
+            ].map((s, i) => (
+              <div key={i} className={`text-center rounded-xl px-2 py-2 ${s.bg} border ${s.border}`}>
+                <p className={`text-lg font-bold font-mono ${s.color}`}>{s.val}</p>
+                <p className="text-[9px] text-slate-500 font-mono mt-0.5">{s.label}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* ── Recommendation Cards ── */}
+      <div className="space-y-3">
+        {recs.map((rec, i) => (
+          <RecCard key={i} rec={rec} index={i} visible={visible && scanPhase === 2} />
+        ))}
+      </div>
+
+      {/* ── Footer ── */}
+      {visible && (
+        <div
+          className="flex items-center justify-between px-4 py-3 rounded-xl bg-slate-800/30 border border-slate-700/30"
+          style={{ animation: "slideUp 0.5s ease forwards", animationDelay: `${recs.length * 120 + 600}ms`, opacity: 0 }}
+        >
+          <div className="flex items-center gap-2 text-slate-500">
+            <Cpu className="w-3.5 h-3.5" />
+            <span className="text-[10px] font-mono">التوصيات مبنية على تحليل {networkStats ? Object.keys(networkStats).length * 4 : 16} متغيراً شبكياً</span>
+          </div>
+          <div className="flex items-center gap-1.5 text-[9px] font-mono text-slate-600">
+            <span className="w-1.5 h-1.5 rounded-full bg-slate-600" />
+            AI-GEN · DO NOT OVERRIDE WITHOUT APPROVAL
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -518,8 +812,8 @@ export default function Analyze({ setTowerAiResults, initialTowerId }) {
               {TABS.map(tab => (
                 <button key={tab.id} onClick={() => setActiveTab(tab.id)}
                   className={`px-4 py-2 rounded-xl text-xs font-mono transition-all flex items-center gap-2 ${activeTab === tab.id
-                      ? "bg-slate-700/50 text-cyan-400 border border-slate-600/50"
-                      : "text-slate-400 hover:text-slate-300 hover:bg-slate-700/20"
+                    ? "bg-slate-700/50 text-cyan-400 border border-slate-600/50"
+                    : "text-slate-400 hover:text-slate-300 hover:bg-slate-700/20"
                     }`}>
                   <span>{tab.icon}</span>{tab.label}
                 </button>
@@ -898,32 +1192,8 @@ export default function Analyze({ setTowerAiResults, initialTowerId }) {
                 )}
               </div>
             )}
-            {result && (
+            {result && <AIAdvisorPanel recs={recs} prob={prob} isAnomaly={isAnomaly} risk={risk} networkStats={networkStats} />}
 
-
-              <div className="fade-up">
-                <div className="flex items-center gap-3 my-6">
-                  <h2 className="font-bold text-white">توصيات الذكاء الاصطناعي 🤖</h2>
-                  <div className="flex-1 h-px bg-linear-to-l from-transparent via-slate-700 to-transparent" />
-
-                </div>
-
-                <div className="space-y-3">
-                  {recs.map((r, i) => (
-                    <div key={i} className={`flex items-start gap-4 rounded-2xl border px-5 py-4 ${r.type === "critical" ? "bg-red-500/5 border-red-500/20" : r.type === "warning" ? "bg-yellow-500/5 border-yellow-500/20" : "bg-emerald-500/5 border-emerald-500/20"
-                      }`}>
-                      <span className="text-2xl shrink-0 mt-0.5">{r.icon}</span>
-                      <div className="flex-1">
-                        <p className="text-sm font-bold text-slate-200">{r.text}</p>
-                        <p className={`text-[10px] mono mt-1 ${r.type === "critical" ? "text-red-500" : r.type === "warning" ? "text-yellow-500" : "text-emerald-500"}`}>
-                          {r.type === "critical" ? "🔴 أولوية قصوى" : r.type === "warning" ? "🟡 تحتاج متابعة" : "🟢 حالة مثلى"}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
         </div>
       </div>
